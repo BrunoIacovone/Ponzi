@@ -1,11 +1,13 @@
-import {useAuth} from "./auth/authContext.tsx";
-import Login from "./components/Login.tsx";
+import { useAuth } from "./auth/authContext";
+import Login from "./components/Login";
+import AppRouter from "./routes/AppRouter";
 
 function App() {
   const { user } = useAuth();
-
   if (!user) return <Login />;
-  return <div className="p-4">Bienvenido, {user.email}</div>;
+  return <AppRouter />;
 }
 
 export default App;
+
+
