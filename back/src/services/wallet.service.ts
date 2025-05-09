@@ -14,14 +14,25 @@ export async function addFunds(uid: string, amount: number) {
   };
   await admin.database().ref().update(updates);
   const balanceSnap = await admin.database().ref(`users/${uid}/balance`).get();
-  return { balance: balanceSnap.val(), transaction: { txId, amount, timestamp: now } };
+  return {
+    balance: balanceSnap.val(),
+    transaction: { txId, amount, timestamp: now },
+  };
 }
 
-export async function sendMoney(senderUid: string, recipientUid: string, amount: number) {
+export async function sendMoney(
+  senderUid: string,
+  recipientUid: string,
+  amount: number,
+) {
   if (senderUid === recipientUid) throw new Error('Cannot send money to self');
   if (amount <= 0) throw new Error('Amount must be positive');
-  const senderSnap = await admin.database().ref(`users/${senderUid}/balance`).get();
-  if (!senderSnap.exists() || senderSnap.val() < amount) throw new Error('Insufficient funds');
+  const senderSnap = await admin
+    .database()
+    .ref(`users/${senderUid}/balance`)
+    .get();
+  if (!senderSnap.exists() || senderSnap.val() < amount)
+    throw new Error('Insufficient funds');
   const txId = admin.database().ref().push().key!;
   const now = Date.now();
   const updates: any = {
@@ -43,8 +54,10 @@ export async function sendMoney(senderUid: string, recipientUid: string, amount:
       amount,
       timestamp: now,
     },
-    [`users/${senderUid}/balance`]: admin.database.ServerValue.increment(-amount),
-    [`users/${recipientUid}/balance`]: admin.database.ServerValue.increment(amount)
+    [`users/${senderUid}/balance`]:
+      admin.database.ServerValue.increment(-amount),
+    [`users/${recipientUid}/balance`]:
+      admin.database.ServerValue.increment(amount),
   };
   await admin.database().ref().update(updates);
   return { txId, amount, timestamp: now };
@@ -61,4 +74,4 @@ export async function getTransactions(uid: string) {
   return Object.entries(txs)
     .map(([id, tx]: any) => ({ id, ...tx }))
     .sort((a, b) => b.timestamp - a.timestamp);
-} 
+}

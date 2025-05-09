@@ -1,4 +1,11 @@
-import { Controller, Post, Req, UseGuards, Body, BadRequestException, InternalServerErrorException, UnauthorizedException, ForbiddenException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Req,
+  UseGuards,
+  Body,
+  BadRequestException,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { addFunds } from '../services/wallet.service';
@@ -12,7 +19,8 @@ export class FundsController {
   @UseGuards(FirebaseAuthGuard)
   @Post()
   async add(@Req() req: AuthenticatedRequest, @Body('amount') amount: number) {
-    if (amount <= 0) throw new BadRequestException('Amount must be a positive number');
+    if (amount <= 0)
+      throw new BadRequestException('Amount must be a positive number');
     return await addFunds(req.user.uid, amount);
   }
-} 
+}

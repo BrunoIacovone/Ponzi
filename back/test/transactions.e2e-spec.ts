@@ -33,8 +33,8 @@ describe('/api/transactions (e2e)', () => {
         }
       });
   });
-  
+
   afterAll(async () => {
     await TestUtils.cleanup();
   });
-}); 
+});

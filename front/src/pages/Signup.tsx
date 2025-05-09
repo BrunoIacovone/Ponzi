@@ -2,14 +2,12 @@ import { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../auth/firebase.ts';
 import { useNavigate } from 'react-router-dom';
-import { useClient } from '../hooks/useClient.ts';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { create } = useClient();
   const navigate = useNavigate();
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -20,8 +18,6 @@ export default function Signup() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const token = await userCredential.user.getIdToken();
       localStorage.setItem('token', token);
-
-      await create();
       navigate('/');
     } catch (err: any) {
       setError(err.message);

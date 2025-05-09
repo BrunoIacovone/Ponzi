@@ -27,4 +27,4 @@ describe('/api/balance (e2e)', () => {
   afterAll(async () => {
     await TestUtils.cleanup();
   });
-}); 
+});

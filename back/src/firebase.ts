@@ -8,7 +8,7 @@ dotenv.config({
 if (process.env.NODE_ENV === 'test') {
   admin.initializeApp({
     projectId: process.env.FIREBASE_PROJECT_ID,
-    databaseURL: process.env.FIREBASE_DATABASE_URL_EMULATOR
+    databaseURL: process.env.FIREBASE_DATABASE_URL_EMULATOR,
   });
 } else {
   admin.initializeApp({

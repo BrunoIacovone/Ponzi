@@ -44,4 +44,4 @@ describe('/api/add-funds (e2e)', () => {
   afterAll(async () => {
     await TestUtils.cleanup();
   });
-}); 
+});

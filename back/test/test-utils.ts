@@ -3,9 +3,16 @@ import { Test } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import admin from '../src/firebase';
 import { initializeApp, getApps, deleteApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, connectAuthEmulator } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  connectAuthEmulator,
+} from 'firebase/auth';
 import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
-import { getApps as getAdminApps, deleteApp as deleteAdminApp } from 'firebase-admin/app';
+import {
+  getApps as getAdminApps,
+  deleteApp as deleteAdminApp,
+} from 'firebase-admin/app';
 
 export class TestUtils {
   static app: INestApplication;
@@ -25,7 +32,7 @@ export class TestUtils {
         apiKey: process.env.FIREBASE_API_KEY!,
         authDomain: process.env.FIREBASE_AUTH_DOMAIN!,
         projectId: process.env.FIREBASE_PROJECT_ID!,
-        databaseURL: process.env.FIREBASE_DATABASE_URL_EMULATOR
+        databaseURL: process.env.FIREBASE_DATABASE_URL_EMULATOR,
       });
     } else {
       this.firebaseApp = getApps()[0];
@@ -33,7 +40,9 @@ export class TestUtils {
 
     if (process.env.FIREBASE_DATABASE_EMULATOR_HOST) {
       const db = getDatabase(this.firebaseApp);
-      const url = new URL(`http://${process.env.FIREBASE_DATABASE_EMULATOR_HOST}`);
+      const url = new URL(
+        `http://${process.env.FIREBASE_DATABASE_EMULATOR_HOST}`,
+      );
       connectDatabaseEmulator(db, url.hostname, parseInt(url.port, 10));
     }
 
@@ -47,7 +56,11 @@ export class TestUtils {
   static async loginTestUser() {
     const auth = getAuth(this.firebaseApp);
 
-    const userCredential = await signInWithEmailAndPassword(auth, process.env.FIREBASE_TEST_EMAIL!, process.env.FIREBASE_TEST_PASSWORD!);
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      process.env.FIREBASE_TEST_EMAIL!,
+      process.env.FIREBASE_TEST_PASSWORD!,
+    );
     this.testToken = await userCredential.user.getIdToken();
     this.testUid = userCredential.user.uid;
   }

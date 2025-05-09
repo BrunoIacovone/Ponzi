@@ -34,7 +34,11 @@ describe('/api/send-money (e2e)', () => {
     return request(TestUtils.app.getHttpServer())
       .post('/api/send-money')
       .set(TestUtils.getAuthHeader())
-      .send({ recipientId: 'test-recipient-uid', amount: 1000000, currency: 'USD' }) // Large amount likely to be insufficient
+      .send({
+        recipientId: 'test-recipient-uid',
+        amount: 1000000,
+        currency: 'USD',
+      }) // Large amount likely to be insufficient
       .expect(400); // Assuming 400 for insufficient funds or other business logic errors
   });
 
@@ -49,4 +53,4 @@ describe('/api/send-money (e2e)', () => {
   afterAll(async () => {
     await TestUtils.cleanup();
   });
-}); 
+});
