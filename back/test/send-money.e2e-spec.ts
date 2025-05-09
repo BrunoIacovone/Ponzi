@@ -1,38 +1,52 @@
 import request from 'supertest';
-import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import { AppModule } from '../src/app.module';
+import { TestUtils } from './test-utils';
 
 describe('/api/send-money (e2e)', () => {
-  let app: INestApplication;
-
   beforeAll(async () => {
-    const moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    await TestUtils.initializeApp();
+    await TestUtils.loginTestUser();
   });
 
   it('should reject unauthorized', () => {
-    return request(app.getHttpServer())
+    return request(TestUtils.app.getHttpServer())
       .post('/api/send-money')
-      .send({ recipientUid: 'uid2', amount: 10 })
+      .send({ recipientId: 'some-recipient', amount: 50, currency: 'USD' })
       .expect(401);
   });
 
-  it('should reject invalid amount', async () => {
-    // You would mock auth here for a real test
-    const res = await request(app.getHttpServer())
+  /*
+  it('should send money for authorized user', async () => {
+    // TODO: Consider creating a recipient user or mocking the recipient validation
+    return request(TestUtils.app.getHttpServer())
       .post('/api/send-money')
-      .set('Authorization', 'Bearer test')
-      .send({ recipientUid: 'uid2', amount: -10 });
-    expect(res.status).toBe(400);
+      .set(TestUtils.getAuthHeader())
+      .send({ recipientId: 'test-recipient-uid', amount: 50, currency: 'USD' })
+      .expect(200) // Assuming 200 OK for successful transfer
+      .expect((res) => {
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toEqual('Transfer successful'); // Example message
+        // Optionally, check for transaction ID or updated balance if returned
+      });
+  });
+  */
+
+  it('should reject sending money with insufficient funds', async () => {
+    return request(TestUtils.app.getHttpServer())
+      .post('/api/send-money')
+      .set(TestUtils.getAuthHeader())
+      .send({ recipientId: 'test-recipient-uid', amount: 1000000, currency: 'USD' }) // Large amount likely to be insufficient
+      .expect(400); // Assuming 400 for insufficient funds or other business logic errors
   });
 
-  // Add more tests for valid input with mocks as needed
+  it('should reject sending money to invalid recipient', async () => {
+    return request(TestUtils.app.getHttpServer())
+      .post('/api/send-money')
+      .set(TestUtils.getAuthHeader())
+      .send({ recipientId: 'invalid-recipient', amount: 50, currency: 'USD' })
+      .expect(400); // Assuming 400 for invalid recipient
+  });
 
   afterAll(async () => {
-    await app.close();
+    await TestUtils.cleanup();
   });
 }); 

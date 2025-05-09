@@ -12,8 +12,7 @@ export class FundsController {
   @UseGuards(FirebaseAuthGuard)
   @Post()
   async add(@Req() req: AuthenticatedRequest, @Body('amount') amount: number) {
-    if (amount <= 0) throw new UnprocessableEntityException('Amount must be a positive number');
-    
+    if (amount <= 0) throw new BadRequestException('Amount must be a positive number');
     return await addFunds(req.user.uid, amount);
   }
 } 

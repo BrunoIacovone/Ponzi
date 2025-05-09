@@ -13,6 +13,15 @@ export class SendMoneyController {
   @Post()
   async send(@Req() req: AuthenticatedRequest, @Body() body: { recipientUid: string; amount: number }) {
     const { recipientUid, amount } = body;
+    if (!recipientUid) {
+      throw new BadRequestException('Recipient UID is required');
+    }
+    if (amount === undefined || amount === null) {
+      throw new BadRequestException('Amount is required');
+    }
+    if (amount <= 0) {
+      throw new BadRequestException('Amount must be positive');
+    }
     return await sendMoney(req.user.uid, recipientUid, amount);
   }
 } 

@@ -1,28 +1,40 @@
 import request from 'supertest';
-import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import { AppModule } from '../src/app.module';
+import { TestUtils } from './test-utils';
 
 describe('/api/transactions (e2e)', () => {
-  let app: INestApplication;
-
   beforeAll(async () => {
-    const moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    await TestUtils.initializeApp();
+    await TestUtils.loginTestUser();
   });
 
   it('should reject unauthorized', () => {
-    return request(app.getHttpServer())
+    return request(TestUtils.app.getHttpServer())
       .get('/api/transactions')
       .expect(401);
   });
 
-  // Add more tests for authorized access with mocks as needed
-
+  it('should return transactions for authorized user', async () => {
+    // Consider adding some transactions first (e.g., by calling /api/funds or /api/send-money)
+    // to ensure there are transactions to retrieve.
+    return request(TestUtils.app.getHttpServer())
+      .get('/api/transactions')
+      .set(TestUtils.getAuthHeader())
+      .expect(200)
+      .expect((res) => {
+        expect(Array.isArray(res.body)).toBe(true);
+        // Optionally, check the structure of transaction objects if the array is not empty
+        if (res.body.length > 0) {
+          const transaction = res.body[0];
+          expect(transaction).toHaveProperty('id');
+          expect(transaction).toHaveProperty('direction');
+          expect(transaction).toHaveProperty('amount');
+          expect(transaction).toHaveProperty('timestamp');
+          expect(transaction).toHaveProperty('user');
+        }
+      });
+  });
+  
   afterAll(async () => {
-    await app.close();
+    await TestUtils.cleanup();
   });
 }); 

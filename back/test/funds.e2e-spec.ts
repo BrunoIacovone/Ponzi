@@ -1,38 +1,47 @@
 import request from 'supertest';
-import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import { AppModule } from '../src/app.module';
+import { TestUtils } from './test-utils';
 
 describe('/api/add-funds (e2e)', () => {
-  let app: INestApplication;
-
   beforeAll(async () => {
-    const moduleFixture = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    await TestUtils.initializeApp();
+    await TestUtils.loginTestUser();
   });
 
   it('should reject unauthorized', () => {
-    return request(app.getHttpServer())
+    return request(TestUtils.app.getHttpServer())
       .post('/api/add-funds')
-      .send({ amount: 100 })
+      .send({ amount: 100, currency: 'USD' })
       .expect(401);
   });
 
-  it('should reject invalid amount', async () => {
-    // You would mock auth here for a real test
-    const res = await request(app.getHttpServer())
+  it('should add funds for authorized user', async () => {
+    return request(TestUtils.app.getHttpServer())
       .post('/api/add-funds')
-      .set('Authorization', 'Bearer test')
-      .send({ amount: -10 });
-    expect(res.status).toBe(400);
+      .set(TestUtils.getAuthHeader())
+      .send({ amount: 100, currency: 'USD' })
+      .expect(201)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('balance');
+        expect(typeof res.body.balance).toBe('number');
+        expect(res.body).toHaveProperty('transaction');
+        expect(res.body.transaction).toHaveProperty('amount');
+        expect(res.body.transaction.amount).toEqual(100);
+        expect(res.body.transaction).toHaveProperty('timestamp');
+        expect(typeof res.body.transaction.timestamp).toBe('number');
+        expect(res.body.transaction).toHaveProperty('txId');
+        expect(typeof res.body.transaction.txId).toBe('string');
+      });
   });
 
-  // Add more tests for valid input with mocks as needed
+  it('should reject invalid fund amount', async () => {
+    return request(TestUtils.app.getHttpServer())
+      .post('/api/add-funds')
+      .set(TestUtils.getAuthHeader())
+      .send({ amount: -100, currency: 'USD' })
+      .expect(400);
+  });
 
   afterAll(async () => {
-    await app.close();
+    await TestUtils.cleanup();
   });
 }); 
