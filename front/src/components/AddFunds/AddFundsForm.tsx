@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useAddFunds } from "../../hooks/useWallet";
+import {useNavigate} from "react-router-dom";
 
 export default function AddFundsForm() {
   const [method, setMethod] = useState("card");
   const [amount, setAmount] = useState("");
   const { addFunds, loading, error } = useAddFunds();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,6 +16,7 @@ export default function AddFundsForm() {
     if (result) {
       // Handle successful addition of funds
       setAmount("");
+      navigate("/");
     }
   };
 
