@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { addAmountSchema, AddFundsResponse } from "../schemas/addFunds";
-import { addMoney, getBalance } from "../api/wallet";
+import { addMoney, getBalance, getTransactions, Transaction } from "../api/wallet";
 
 export function useGetBalance() {
     const [loading, setLoading] = useState(false);
@@ -44,4 +44,25 @@ export function useAddFunds() {
     };
 
     return { addFunds, loading, error };
+}
+
+export function useGetTransactions() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTransactions = async (): Promise<Transaction[] | void> => {
+    try {
+      setLoading(true);
+      setError(null);
+      return await getTransactions();
+    } catch (err: any) {
+      console.error('Error fetching transactions:', err);
+      setError(err.response?.data?.message || 'Unexpected error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return { getTransactions: fetchTransactions, loading, error };
+
 }
