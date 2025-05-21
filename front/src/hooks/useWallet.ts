@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { addAmountSchema, AddFundsResponse } from "../schemas/addFunds";
-import { addMoney, getBalance, getTransactions, Transaction } from "../api/wallet";
+import { addMoney, getBalance, getTransactions, sendMoney, Transaction } from "../api/wallet";
 
 export function useGetBalance() {
     const [loading, setLoading] = useState(false);
@@ -65,4 +65,24 @@ export function useGetTransactions() {
 
   return { getTransactions: fetchTransactions, loading, error };
 
+}
+
+export function useSendMoney() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const transferMoney = async (recipientMail: string, amount: number) => {
+        try {
+            setLoading(true);
+            setError(null);
+            return await sendMoney(recipientMail, amount);
+        } catch (err: any) {
+            console.error('Error sending money:', err);
+            setError(err.response?.data?.message || 'Unexpected error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { transferMoney, loading, error };
 }

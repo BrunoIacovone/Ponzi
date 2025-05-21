@@ -2,6 +2,7 @@ import { Amount } from "../schemas/balance";
 import { AddFundsResponse } from "../schemas/addFunds";
 import { api } from "./config";
 
+
 export interface Transaction {
   amount: number;
   direction: 'received' | 'sent'; // puedes ajustarlo si hay otros valores posibles
@@ -24,3 +25,7 @@ export async function getTransactions(): Promise<Transaction[]> {
     return response.data;
 }
 
+export async function sendMoney(recipientMail: string, amount: number): Promise<void> {
+    const response = await api.post('/api/send-money', { recipientMail, amount });
+    return response.data;
+}

@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
-import { sendMoney } from '../services/wallet.service';
+import { getIdFromEmail, sendMoney } from '../services/wallet.service';
 
 interface AuthenticatedRequest extends Request {
   user: { uid: string };
@@ -20,9 +20,14 @@ export class SendMoneyController {
   @Post()
   async send(
     @Req() req: AuthenticatedRequest,
-    @Body() body: { recipientUid: string; amount: number },
+    @Body() body: { recipientMail: string; amount: number },
   ) {
-    const { recipientUid, amount } = body;
+    const { recipientMail, amount } = body;
+
+    console.log('Recipient Mail:', recipientMail);
+
+    const recipientUid = await getIdFromEmail(recipientMail);
+
     if (!recipientUid) {
       throw new BadRequestException('Recipient UID is required');
     }

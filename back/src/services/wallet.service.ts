@@ -1,3 +1,4 @@
+import { receiveMessageOnPort } from 'worker_threads';
 import admin from '../firebase';
 
 export async function addFunds(uid: string, amount: number) {
@@ -74,4 +75,14 @@ export async function getTransactions(uid: string) {
   return Object.entries(txs)
     .map(([id, tx]: any) => ({ id, ...tx }))
     .sort((a, b) => b.timestamp - a.timestamp);
+}
+
+
+export async function getIdFromEmail(email: string) {
+  try {
+    const userRecord = await admin.auth().getUserByEmail(email);
+    return userRecord.uid;
+  } catch {
+    return null;
+  }
 }
