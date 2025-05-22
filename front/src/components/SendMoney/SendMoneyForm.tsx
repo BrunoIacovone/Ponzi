@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 export default function SendMoneyForm() {
   const [amount , setAmount] = useState<number | null>(null);
   const [recipient, setRecipient] = useState<string>("");
-  const { transferMoney, loading, error } = useSendMoney();
+  const { transferMoney, loading } = useSendMoney();
   const navigate = useNavigate();
 
   

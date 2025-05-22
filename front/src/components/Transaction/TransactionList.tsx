@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Transaction } from "../../api/wallet";
 import { useGetTransactions } from "../../hooks/useWallet";
 import { TransactionType } from "./Filters";
