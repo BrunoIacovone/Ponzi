@@ -38,7 +38,6 @@ export default function TransactionList({
         txList.reverse();
       setTransactions(txList);
       setLoading(false);
-      console.log("Transactions:", txList);
       //ver como hacer para displayear el transaction.
     }
   );
@@ -47,12 +46,6 @@ export default function TransactionList({
 
   useEffect(() => {
     let filtered = transactions;
-
-    console.log("Transactions:", transactions);
-    console.log("Filtered Transactions:", filteredTransactions);
-    console.log("Type:", type);
-    console.log("From Date:", fromDate);
-    console.log("To Date:", toDate);
 
     // Filtrar por tipo
     if (type === TransactionType.Income) {
@@ -69,15 +62,12 @@ export default function TransactionList({
         transaction.timestamp >= from && transaction.timestamp <= to
     );
 
-    console.log("Filtered Transactions after filters:", filtered);
 
     setFilteredTransactions(filtered);
   }, [type, fromDate, toDate, transactions]);
 
   if (loading) return <div>Loading transactions...</div>;
   if (error) return <div>Error: {error}</div>;
-
-  console.log()
   
   return (
     <div>
