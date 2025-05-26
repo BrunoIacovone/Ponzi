@@ -8,3 +8,13 @@ para correr el front es
 npm run dev
 ```
 divertite
+
+btw para usar cypress tira
+```bash
+npx cypress open
+```
+tambien esta
+```bash
+npx cypress run
+```
+pero es mejor el open
