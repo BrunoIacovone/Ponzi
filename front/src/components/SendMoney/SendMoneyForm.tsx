@@ -14,7 +14,6 @@ export default function SendMoneyForm() {
     e.preventDefault();
     if (amount && recipient) {
       try {
-        console.log(`Sending ${amount} to ${recipient}`);
         transferMoney(recipient, amount);
         navigate("/")
       } catch (error) {

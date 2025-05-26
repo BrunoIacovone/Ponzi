@@ -1,12 +1,16 @@
+import { useEffect, useState } from "react";
 import Balance from "../components/Dashboard/Balance";
 import QuickActions from "../components/Dashboard/QuickActions";
-import RecentActivity from "../components/Dashboard/RecentActivity";
 import {useNavigate} from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../auth/firebase.ts"
+import { TransactionType } from "../components/Transaction/Filters";
+import TransactionList from "../components/Transaction/TransactionList";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [fromDate, setFromDate] = useState("");
+
 
   const handleLogout = async () => {
     try {
@@ -18,6 +22,14 @@ export default function Dashboard() {
       console.error("Error signing out: ", error);
     }
   }
+
+  useEffect(() => {
+    const today = new Date();
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(today.getMonth() - 3);
+    const from = threeMonthsAgo.toISOString().slice(0, 10);
+    setFromDate(from);
+  }, []);
 
   return (
       <div style={{maxWidth: 480, margin: '0 auto', padding: 16}}>
@@ -36,9 +48,9 @@ export default function Dashboard() {
         >
           Log out
         </button>
-        <Balance/>
-        <QuickActions/>
-        <RecentActivity/>
-      </div>
+      <Balance />
+      <QuickActions />
+      <TransactionList type={TransactionType.All} fromDate={fromDate} toDate={null} />
+    </div>
   );
 } 

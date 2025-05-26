@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { Transaction } from "../../api/wallet";
 import { useGetTransactions } from "../../hooks/useWallet";
 import { TransactionType } from "./Filters";
+import { auth } from "../../auth/firebase";
+import { FirebaseRealtimeWatcher } from "../../watcher/FirebaseRealtimeWatcher";
 
 interface TransactionListProps {
     type: TransactionType;
     fromDate: string;
-    toDate: string;
+    toDate: string | null;
 }
 
 export default function TransactionList({
@@ -14,64 +16,75 @@ export default function TransactionList({
   fromDate,
   toDate,
 }: TransactionListProps) {
-
-  // solo me falta  cambiar transactions para que cambie segun cambios en type, fromDate o toDate
-  const { getTransactions, loading, error } = useGetTransactions();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>(transactions);
+  const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-      getTransactions().then((res) => {
-        if (res) {
-          setTransactions(res);
-        }
-      });
-    }, []);
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (!user) {
+      setError("User not authenticated");
+      setLoading(false);
+      return;
+    }
+    const watcher = new FirebaseRealtimeWatcher();
+    watcher.watch<Record<string, Transaction>>(
+    `users/${user.uid}/transactions`,
+    (val) => {
+      const txList = val
+        ? Object.values(val)
+        : [];
+        txList.reverse();
+      setTransactions(txList);
+      setLoading(false);
+      //ver como hacer para displayear el transaction.
+    }
+  );
+  return () => watcher.clearAll();
+  }, []);
 
-    useEffect(() => {
-        if (type === TransactionType.All || type === TransactionType.Transfer) {
-          return setFilteredTransactions(transactions);
-        }
-        filteredTransactions.filter ((transaction) => {
-          (transaction.direction === "received"  && type === TransactionType.Income) || (transaction.direction === "sent" && type === TransactionType.Expense);})
-  }, [type])
+  useEffect(() => {
+    let filtered = transactions;
 
-    useEffect(() => {
-      if (fromDate && toDate) {
-        const from = new Date(fromDate).getTime();
-        const to = new Date(toDate).getTime();
-        setFilteredTransactions(transactions.filter(transaction => transaction.timestamp >= from && transaction.timestamp <= to));
-      } else {
-        setFilteredTransactions(transactions);
-      }
-    }, [fromDate, toDate]);
+    // Filtrar por tipo
+    if (type === TransactionType.Income) {
+      filtered = filtered.filter((t) => t.direction === "received");
+    } else if (type === TransactionType.Expense) {
+      filtered = filtered.filter((t) => t.direction === "sent");
+    }
 
+    // Filtrar por fechas
+    const from = new Date(fromDate).getTime();
+    const to = toDate ? new Date(toDate).getTime() : Date.now();
+    filtered = filtered.filter(
+      (transaction) =>
+        transaction.timestamp >= from && transaction.timestamp <= to
+    );
+
+
+    setFilteredTransactions(filtered);
+  }, [type, fromDate, toDate, transactions]);
+
+  if (loading) return <div>Loading transactions...</div>;
+  if (error) return <div>Error: {error}</div>;
   
-    if (loading) return <div>Loading balance...</div>;
-    if (error) return <div>Error: {error}</div>;
-    
   return (
     <div>
-      {
-        transactions.map((transaction) => {
-          if (transaction.direction === "received") {
-            return IncomeComponent(transaction.user, transaction.amount, transaction.timestamp);
-          } else if (transaction.direction === "sent") {
-            return ExpenseComponent(transaction.user, transaction.amount, transaction.timestamp);
-          }
-        })
-      }
-      {/* <div style={{ background: '#f6f6f6', padding: 12, borderRadius: 8, marginBottom: 8 }}>
-        <div style={{ color: 'green' }}>+ $250.00 <span style={{ color: '#888', fontSize: 12 }}>From John Doe</span></div>
-        <div style={{ fontSize: 12, color: '#888' }}>Today, 2:30 PM</div>
+      <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
+        Last 3 months transactions
       </div>
-      <div style={{ background: '#f6f6f6', padding: 12, borderRadius: 8 }}>
-        <div style={{ color: 'red' }}>- $120.50 <span style={{ color: '#888', fontSize: 12 }}>To Coffee Shop</span></div>
-        <div style={{ fontSize: 12, color: '#888' }}>Yesterday, 9:15 AM</div>
-      </div> */}
+      {filteredTransactions.map((transaction) => {
+        if (transaction.direction === "received") {
+          return IncomeComponent(transaction.user, transaction.amount, transaction.timestamp);
+        } else if (transaction.direction === "sent") {
+          return ExpenseComponent(transaction.user, transaction.amount, transaction.timestamp);
+        }
+        return null;
+      })}
     </div>
   );
-} 
+}
 
 function IncomeComponent (from : String, amount : number, timestamp : number) {
   return (

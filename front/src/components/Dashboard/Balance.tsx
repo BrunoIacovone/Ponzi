@@ -1,16 +1,26 @@
 import { useEffect, useState } from 'react';
-import { useGetBalance } from '../../hooks/useWallet';
+import { auth } from '../../auth/firebase';
+import { FirebaseRealtimeWatcher } from '../../watcher/FirebaseRealtimeWatcher';
 
 export default function Balance() {
-  const { getBalance, loading, error } = useGetBalance();
   const [balance, setBalance] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    getBalance().then((res) => {
-      if (res) {
-        setBalance(res.balance);
-      }
+
+    useEffect(() => {
+    const user = auth.currentUser;
+    if (!user) {
+      setError('User not authenticated');
+      setLoading(false);
+      return
+    };
+    const watcher = new FirebaseRealtimeWatcher();
+    watcher.watch<number>(`users/${user.uid}/balance`, (val) => {
+      setBalance(val || 0);
+      setLoading(false);
     });
+    return () => watcher.clearAll();
   }, []);
 
   if (loading) return <div>Loading balance...</div>;
