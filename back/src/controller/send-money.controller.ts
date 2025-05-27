@@ -29,7 +29,7 @@ export class SendMoneyController {
     const recipientUid = await getIdFromEmail(recipientMail);
 
     if (!recipientUid) {
-      throw new BadRequestException('Recipient UID is required');
+      throw new BadRequestException('Recipient mail is invalid');
     }
     if (amount === undefined || amount === null) {
       throw new BadRequestException('Amount is required');

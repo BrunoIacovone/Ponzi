@@ -27,12 +27,13 @@ export default function AddFundsForm() {
         placeholder="Amount" 
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
-        style={{ width: '100%', marginBottom: 12 }} 
+        style={{ width: '100%', marginBottom: 12 }}
+        name="amount"
       />
       <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-        <button type="button" onClick={() => setMethod("card")}>Card</button>
-        <button type="button" onClick={() => setMethod("bank")}>Bank</button>
-        <button type="button" onClick={() => setMethod("debin")}>DEBIN</button>
+        <button type="button" onClick={() => setMethod("card")} name="card">Card</button>
+        <button type="button" onClick={() => setMethod("bank")} name="bank">Bank</button>
+        <button type="button" onClick={() => setMethod("debin")} name="debin">DEBIN</button>
       </div>
       {method === "card" && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

@@ -1,6 +1,7 @@
 import { Amount } from "../schemas/balance";
 import { AddFundsResponse } from "../schemas/addFunds";
 import { api } from "./config";
+import {SendMoneyResponse} from "../schemas/sendMoney.ts";
 
 
 export interface Transaction {
@@ -25,7 +26,7 @@ export async function getTransactions(): Promise<Transaction[]> {
     return response.data;
 }
 
-export async function sendMoney(recipientMail: string, amount: number): Promise<void> {
+export async function sendMoney(recipientMail: string, amount: number): Promise<SendMoneyResponse> {
     const response = await api.post('/api/send-money', { recipientMail, amount });
     return response.data;
 }

@@ -5,21 +5,17 @@ import { useNavigate } from "react-router-dom";
 export default function SendMoneyForm() {
   const [amount , setAmount] = useState<number | null>(null);
   const [recipient, setRecipient] = useState<string>("");
-  const { transferMoney, loading } = useSendMoney();
+  const { transferMoney, loading, error } = useSendMoney();
   const navigate = useNavigate();
 
   
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (amount && recipient) {
-      try {
-        transferMoney(recipient, amount);
-        navigate("/")
-      } catch (error) {
-        console.error("Error sending money:", error);
-      }
-    }
+    if (!amount  || !recipient) return;
+
+    const result = await transferMoney(recipient, amount)
+    if (result) navigate("/")
   };
 
   useEffect(() => {}, [loading])
@@ -39,6 +35,7 @@ export default function SendMoneyForm() {
         onChange={e => setRecipient(e.target.value)}
       />
       <input type="text" placeholder="Description (optional)" />
+      {error && <div style={{ color: 'red', marginTop: 8 }}>{error}</div>}
       <button type="submit" onClick={handleSubmit}>Send</button>
     </form>
   );

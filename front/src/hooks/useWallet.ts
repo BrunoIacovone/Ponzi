@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { addAmountSchema, AddFundsResponse } from "../schemas/addFunds";
 import { addMoney, getBalance, getTransactions, sendMoney, Transaction } from "../api/wallet";
+import {SendMoneyResponse} from "../schemas/sendMoney.ts";
 
 export function useGetBalance() {
     const [loading, setLoading] = useState(false);
@@ -71,7 +72,7 @@ export function useSendMoney() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const transferMoney = async (recipientMail: string, amount: number) => {
+    const transferMoney = async (recipientMail: string, amount: number) : Promise<SendMoneyResponse | void> => {
         try {
             setLoading(true);
             setError(null);
