@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
-import { getIdFromEmail, sendMoney } from '../services/wallet.service';
+import { WalletService } from '../services/wallet.service';
 
 interface AuthenticatedRequest extends Request {
   user: { uid: string };
@@ -16,6 +16,8 @@ interface AuthenticatedRequest extends Request {
 
 @Controller('api/send-money')
 export class SendMoneyController {
+  constructor(private readonly walletService: WalletService) {}
+
   @UseGuards(FirebaseAuthGuard)
   @Post()
   async send(
@@ -26,7 +28,7 @@ export class SendMoneyController {
 
     console.log('Recipient Mail:', recipientMail);
 
-    const recipientUid = await getIdFromEmail(recipientMail);
+    const recipientUid = await this.walletService.getIdFromEmail(recipientMail);
 
     if (!recipientUid) {
       throw new BadRequestException('Recipient mail is invalid');
@@ -37,6 +39,6 @@ export class SendMoneyController {
     if (amount <= 0) {
       throw new BadRequestException('Amount must be positive');
     }
-    return await sendMoney(req.user.uid, recipientUid, amount);
+    return await this.walletService.sendMoney(req.user.uid, recipientUid, amount);
   }
 }

@@ -1,118 +1,112 @@
-import { receiveMessageOnPort } from 'worker_threads';
-import admin from '../firebase';
+import admin from 'src/firebase';
+import { WalletRepository } from '../repositories/wallet.repository';
+import { Injectable } from '@nestjs/common';
 
-export async function addFunds(uid: string, amount: number) {
-  const txId = admin.database().ref().push().key!;
-  const now = Date.now();
-  const updates: any = {
-    [`users/${uid}/balance`]: admin.database.ServerValue.increment(amount),
-    [`users/${uid}/transactions/${txId}`]: {
-      direction: 'received',
-      user: 'system',
-      amount,
-      timestamp: now,
-    },
-  };
-  await admin.database().ref().update(updates);
-  const balanceSnap = await admin.database().ref(`users/${uid}/balance`).get();
-  return {
-    balance: balanceSnap.val(),
-    transaction: { txId, amount, timestamp: now },
-  };
-}
+@Injectable()
+export class WalletService {
+  constructor(private repo: WalletRepository) {}
 
-export async function sendMoney(
-  senderUid: string,
-  recipientUid: string,
-  amount: number,
-) {
-  const senderSnap = await admin
-    .database()
-    .ref(`users/${senderUid}/balance`)
-    .get();
+  async addFunds(uid: string, amount: number) {
+    const txId = await this.repo.pushKey();
+    const now = Date.now();
 
-  if (!senderSnap.exists() || senderSnap.val() < amount)
-    throw new Error('Insufficient funds');
+    const updates: any = {
+      [`users/${uid}/balance`]: admin.database.ServerValue.increment(amount),
+      [`users/${uid}/transactions/${txId}`]: {
+        direction: 'received',
+        user: 'system',
+        amount,
+        timestamp: now,
+      },
+    };
 
-  let senderNameOrEmail = senderUid;
-  try {
-    const senderUserRecord = await admin.auth().getUser(senderUid);
-    senderNameOrEmail = senderUserRecord.displayName || senderUserRecord.email || senderUid;
-  } catch (error) {
-    console.error(`Error fetching sender user details for uid ${senderUid}:`, error);
+    await this.repo.update(updates);
+
+    const balance = await this.repo.getBalance(uid);
+    return {
+      balance,
+      transaction: { txId, amount, timestamp: now },
+    };
   }
 
-  let recipientNameOrEmail = recipientUid;
-  try {
-    const recipientUserRecord = await admin.auth().getUser(recipientUid);
-    recipientNameOrEmail = recipientUserRecord.displayName || recipientUserRecord.email || recipientUid;
-  } catch (error) {
-    console.error(`Error fetching recipient user details for uid ${recipientUid}:`, error);
+  async sendMoney(senderUid: string, recipientUid: string, amount: number) {
+    const senderBalance = await this.repo.getBalance(senderUid);
+    if (senderBalance < amount) throw new Error('Insufficient funds');
+
+    const now = Date.now();
+    const txId = await this.repo.pushKey();
+
+    let senderNameOrEmail = senderUid;
+    try {
+      const senderUser = await this.repo.getUserById(senderUid);
+      senderNameOrEmail = senderUser.displayName || senderUser.email || senderUid;
+    } catch {}
+
+    let recipientNameOrEmail = recipientUid;
+    try {
+      const recipientUser = await this.repo.getUserById(recipientUid);
+      recipientNameOrEmail = recipientUser.displayName || recipientUser.email || recipientUid;
+    } catch {}
+
+    const updates: any = {
+      [`transfers/${txId}`]: {
+        from: senderUid,
+        to: recipientUid,
+        amount,
+        timestamp: now,
+      },
+      [`users/${senderUid}/transactions/${txId}`]: {
+        direction: 'sent',
+        user: recipientUid,
+        userName: recipientNameOrEmail,
+        amount,
+        timestamp: now,
+      },
+      [`users/${recipientUid}/transactions/${txId}`]: {
+        direction: 'received',
+        user: senderUid,
+        userName: senderNameOrEmail,
+        amount,
+        timestamp: now,
+      },
+      [`users/${senderUid}/balance`]: admin.database.ServerValue.increment(-amount),
+      [`users/${recipientUid}/balance`]: admin.database.ServerValue.increment(amount),
+    };
+
+    await this.repo.update(updates);
+    return { txId, amount, timestamp: now };
   }
 
-  const txId = admin.database().ref().push().key!;
-  const now = Date.now();
-  const updates: any = {
-    [`transfers/${txId}`]: {
-      from: senderUid,
-      to: recipientUid,
-      amount,
-      timestamp: now,
-    },
-    [`users/${senderUid}/transactions/${txId}`]: {
-      direction: 'sent',
-      user: recipientUid,
-      userName: recipientNameOrEmail,
-      amount,
-      timestamp: now,
-    },
-    [`users/${recipientUid}/transactions/${txId}`]: {
-      direction: 'received',
-      user: senderUid,
-      userName: senderNameOrEmail,
-      amount,
-      timestamp: now,
-    },
-    [`users/${senderUid}/balance`]:
-      admin.database.ServerValue.increment(-amount),
-    [`users/${recipientUid}/balance`]:
-      admin.database.ServerValue.increment(amount),
-  };
-  await admin.database().ref().update(updates);
-  return { txId, amount, timestamp: now };
-}
+  async getTransactions(uid: string) {
+    const txs = await this.repo.getTransactions(uid);
+    const entries = Object.entries(txs);
 
-export async function getBalance(uid: string) {
-  const snap = await admin.database().ref(`users/${uid}/balance`).get();
-  return { balance: snap.val() || 0 };
-}
-
-export async function getTransactions(uid: string) {
-  const snap = await admin.database().ref(`users/${uid}/transactions`).get();
-  const txs = snap.val() || {};
-  const transactionsWithUserDetails = await Promise.all(
-    Object.entries(txs).map(async ([id, tx]: [string, any]) => {
-      let userNameOrEmail = tx.user;
-      if (tx.user && tx.user !== 'system') {
-        try {
-          const userRecord = await admin.auth().getUser(tx.user);
-          userNameOrEmail = userRecord.displayName || userRecord.email || tx.user;
-        } catch (error) {
-          console.error(`Error fetching user details for uid ${tx.user}:`, error);
+    const txsWithDetails = await Promise.all(
+      entries.map(async ([id, tx]: [string, any]) => {
+        let userNameOrEmail = tx.user;
+        if (tx.user !== 'system') {
+          try {
+            const user = await this.repo.getUserById(tx.user);
+            userNameOrEmail = user.displayName || user.email || tx.user;
+          } catch {}
         }
-      }
-      return { id, ...tx, user: userNameOrEmail };
-    }),
-  );
-  return transactionsWithUserDetails.sort((a, b) => b.timestamp - a.timestamp);
-}
+        return { id, ...tx, user: userNameOrEmail };
+      })
+    );
 
+    return txsWithDetails.sort((a, b) => b.timestamp - a.timestamp);
+  }
 
-export async function getIdFromEmail(email: string) {
-  try {
-    const userRecord = await admin.auth().getUserByEmail(email);
-    return userRecord.uid;
-  } catch {
-    return null;
+  async getBalance(uid: string) {
+    return await this.repo.getBalance(uid);
+  }
+
+  async getIdFromEmail(email: string) {
+    try {
+      const user = await this.repo.getUserByEmail(email);
+      return user.uid;
+    } catch {
+      return null;
+    }
   }
 }

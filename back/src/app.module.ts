@@ -3,6 +3,8 @@ import { BalanceController } from './controller/balance.controller';
 import { TransactionsController } from './controller/transactions.controller';
 import { FundsController } from './controller/funds.controller';
 import { SendMoneyController } from './controller/send-money.controller';
+import { WalletService } from './services/wallet.service';
+import { WalletRepository } from './repositories/wallet.repository';
 
 @Module({
   imports: [],
@@ -12,6 +14,6 @@ import { SendMoneyController } from './controller/send-money.controller';
     FundsController,
     SendMoneyController,
   ],
-  providers: [],
+  providers: [WalletService, WalletRepository],
 })
 export class AppModule {}
