@@ -6,9 +6,10 @@ import {SendMoneyResponse} from "../schemas/sendMoney.ts";
 
 export interface Transaction {
   amount: number;
-  direction: 'received' | 'sent'; // puedes ajustarlo si hay otros valores posibles
-  timestamp: number; // puedes convertirlo a Date si lo deseas
+  direction: 'received' | 'sent'; 
+  timestamp: number; 
   user: string;
+  userName: string;
 }
 
 export async function getBalance(): Promise<Amount> {

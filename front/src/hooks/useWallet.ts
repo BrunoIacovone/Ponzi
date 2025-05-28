@@ -10,7 +10,7 @@ export function useGetBalance() {
     const fetchBalance = async () => {
       try {
         setLoading(true);
-        setError(null);
+        setError(null); 
         return await getBalance();
       } catch (err: any) {
         console.error('Error fetching balance:', err);

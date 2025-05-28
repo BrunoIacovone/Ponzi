@@ -4,7 +4,7 @@ import { useState } from "react";
 import {useNavigate} from "react-router-dom";
 
 export default function TransactionHistory() {
-    const [type, setType] = useState(TransactionType.All);
+  const [type, setType] = useState(TransactionType.All);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const navigate = useNavigate();

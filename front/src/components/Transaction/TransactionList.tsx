@@ -53,9 +53,9 @@ export default function TransactionList({
     } else if (type === TransactionType.Expense) {
       filtered = filtered.filter((t) => t.direction === "sent");
     }
-
+    
     // Filtrar por fechas
-    const from = new Date(fromDate).getTime();
+    const from = fromDate ? new Date(fromDate).getTime() : 0;
     const to = toDate ? new Date(toDate).getTime() : Date.now();
     filtered = filtered.filter(
       (transaction) =>
@@ -76,9 +76,9 @@ export default function TransactionList({
       </div>
       {filteredTransactions.map((transaction) => {
         if (transaction.direction === "received") {
-          return IncomeComponent(transaction.user, transaction.amount, transaction.timestamp);
+          return IncomeComponent(transaction.userName, transaction.amount, transaction.timestamp);
         } else if (transaction.direction === "sent") {
-          return ExpenseComponent(transaction.user, transaction.amount, transaction.timestamp);
+          return ExpenseComponent(transaction.userName, transaction.amount, transaction.timestamp);
         }
         return null;
       })}
