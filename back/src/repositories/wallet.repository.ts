@@ -22,7 +22,7 @@ export class WalletRepository {
   }
 
   async pushKey(): Promise<string> {
-    return this.db.ref().push().key!;
+    return this.db.ref().push().key;
   }
 
   async getTransactions(uid: string): Promise<any> {
