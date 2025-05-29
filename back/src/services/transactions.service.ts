@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { WalletRepository } from '../repositories/wallet.repository';
 
 @Injectable()
-export class TransactionsService{
+export class TransactionsService {
   constructor(private repo: WalletRepository) {}
   async getTransactions(uid: string) {
     const txs = await this.repo.getTransactions(uid);
@@ -18,7 +18,7 @@ export class TransactionsService{
           } catch {}
         }
         return { id, ...tx, user: userNameOrEmail };
-      })
+      }),
     );
 
     return txsWithDetails.sort((a, b) => b.timestamp - a.timestamp);

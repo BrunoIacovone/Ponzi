@@ -22,7 +22,7 @@ import { BalanceService } from './services/balance.service';
     TransactionsService,
     FundsService,
     SendMoneyService,
-    BalanceService
+    BalanceService,
   ],
 })
 export class AppModule {}
