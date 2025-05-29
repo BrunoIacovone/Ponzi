@@ -34,10 +34,6 @@ export class SendMoneyController {
     if (recipientUid === senderUid) {
       throw new BadRequestException('Cannot send money to yourself');
     }
-    return await this.service.sendMoney(
-      req.user.uid,
-      recipientUid,
-      amount,
-    );
+    return await this.service.sendMoney(req.user.uid, recipientUid, amount);
   }
 }

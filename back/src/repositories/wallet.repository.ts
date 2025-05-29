@@ -7,7 +7,8 @@ export class WalletRepository {
   private auth = admin.auth();
 
   async incrementBalance(uid: string, amount: number) {
-    return this.db.ref(`users/${uid}/balance`)
+    return this.db
+      .ref(`users/${uid}/balance`)
       .set(admin.database.ServerValue.increment(amount));
   }
 
@@ -16,11 +17,7 @@ export class WalletRepository {
     return snap.val() || 0;
   }
 
-  async createTransaction(
-    uid: string,
-    txId: string,
-    tx: any
-  ) {
+  async createTransaction(uid: string, txId: string, tx: any) {
     return this.db.ref(`users/${uid}/transactions/${txId}`).set(tx);
   }
 

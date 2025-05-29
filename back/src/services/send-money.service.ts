@@ -15,13 +15,15 @@ export class SendMoneyService {
     let senderNameOrEmail = senderUid;
     try {
       const senderUser = await this.repo.getUserById(senderUid);
-      senderNameOrEmail = senderUser.displayName || senderUser.email || senderUid;
+      senderNameOrEmail =
+        senderUser.displayName || senderUser.email || senderUid;
     } catch {}
 
     let recipientNameOrEmail = recipientUid;
     try {
       const recipientUser = await this.repo.getUserById(recipientUid);
-      recipientNameOrEmail = recipientUser.displayName || recipientUser.email || recipientUid;
+      recipientNameOrEmail =
+        recipientUser.displayName || recipientUser.email || recipientUid;
     } catch {}
 
     const updates: any = {
@@ -45,8 +47,10 @@ export class SendMoneyService {
         amount,
         timestamp: now,
       },
-      [`users/${senderUid}/balance`]: admin.database.ServerValue.increment(-amount),
-      [`users/${recipientUid}/balance`]: admin.database.ServerValue.increment(amount),
+      [`users/${senderUid}/balance`]:
+        admin.database.ServerValue.increment(-amount),
+      [`users/${recipientUid}/balance`]:
+        admin.database.ServerValue.increment(amount),
     };
 
     await this.repo.update(updates);
