@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-const steps = ["Select Bank", "Enter Amount", "Confirm", "Success"];
+const steps = ['Select Bank', 'Enter Amount', 'Confirm', 'Success'];
 
 export default function DebinRequestFlow() {
   const [step, setStep] = useState(0);
@@ -16,9 +16,11 @@ export default function DebinRequestFlow() {
       <div style={{ marginTop: 16 }}>
         {step > 0 && <button onClick={() => setStep(step - 1)}>Back</button>}
         {step < steps.length - 1 && (
-          <button onClick={() => setStep(step + 1)} style={{ marginLeft: 8 }}>Next</button>
+          <button onClick={() => setStep(step + 1)} style={{ marginLeft: 8 }}>
+            Next
+          </button>
         )}
       </div>
     </div>
   );
-} 
+}

@@ -1,7 +1,13 @@
 export default function MonthlySummary() {
   return (
     <div style={{ marginBottom: 16 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: 4,
+        }}
+      >
         <span style={{ color: 'green' }}>Income</span>
         <span>$1,250.00</span>
       </div>
@@ -11,4 +17,4 @@ export default function MonthlySummary() {
       </div>
     </div>
   );
-} 
+}
