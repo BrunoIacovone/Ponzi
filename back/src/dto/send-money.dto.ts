@@ -2,9 +2,9 @@ import { IsString, IsNumber, Min } from 'class-validator';
 
 export class SendMoneyDto {
   @IsString()
-  recipientId: string;
+  recipientMail: string;
 
   @IsNumber()
-  @Min(1)
+  @Min(0)
   amount: number;
 }
