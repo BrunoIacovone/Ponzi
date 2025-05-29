@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Transaction } from "../../api/wallet";
-import { useGetTransactions } from "../../hooks/useWallet";
 import { TransactionType } from "./Filters";
 import { auth } from "../../auth/firebase";
 import { FirebaseRealtimeWatcher } from "../../watcher/FirebaseRealtimeWatcher";
