@@ -21,11 +21,6 @@ jobs:
         with:
           node-version: '22.6.0'
 
-      - name: Copy .env.test to .env
-        run: |
-          cd back
-          cp .env.test .env
-
       - name: Install dependencies
         run: |
           cd back
