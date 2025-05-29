@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
-import { WalletService } from '../services/wallet.service';
 import { SendMoneyDto } from '../dto/send-money.dto';
+import { SendMoneyService } from '../services/send-money.service';
 
 interface AuthenticatedRequest extends Request {
   user: { uid: string };
@@ -19,14 +19,14 @@ interface AuthenticatedRequest extends Request {
 
 @Controller('api/send-money')
 export class SendMoneyController {
-  constructor(private readonly walletService: WalletService) {}
+  constructor(private readonly service: SendMoneyService) {}
 
   @UseGuards(FirebaseAuthGuard)
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async send(@Req() req: AuthenticatedRequest, @Body() body: SendMoneyDto) {
     const { recipientMail, amount } = body;
-    const recipientUid = await this.walletService.getIdFromEmail(recipientMail);
+    const recipientUid = await this.service.getIdFromEmail(recipientMail);
     if (!recipientUid) {
       throw new BadRequestException('Recipient mail is invalid');
     }
@@ -34,7 +34,7 @@ export class SendMoneyController {
     if (recipientUid === senderUid) {
       throw new BadRequestException('Cannot send money to yourself');
     }
-    return await this.walletService.sendMoney(
+    return await this.service.sendMoney(
       req.user.uid,
       recipientUid,
       amount,
