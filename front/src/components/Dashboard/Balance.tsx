@@ -7,14 +7,13 @@ export default function Balance() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-
-    useEffect(() => {
+  useEffect(() => {
     const user = auth.currentUser;
     if (!user) {
       setError('User not authenticated');
       setLoading(false);
-      return
-    };
+      return;
+    }
     const watcher = new FirebaseRealtimeWatcher();
     watcher.watch<number>(`users/${user.uid}/balance`, (val) => {
       setBalance(val || 0);
@@ -29,7 +28,9 @@ export default function Balance() {
   return (
     <div style={{ fontSize: 32, fontWeight: 700, marginBottom: 16 }}>
       ${balance?.toFixed(2) || '0.00'}
-      <div style={{ fontSize: 16, fontWeight: 400, color: '#888' }}>Current Balance</div>
+      <div style={{ fontSize: 16, fontWeight: 400, color: '#888' }}>
+        Current Balance
+      </div>
     </div>
   );
-} 
+}

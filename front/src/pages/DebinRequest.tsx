@@ -1,4 +1,4 @@
-import DebinRequestFlow from "../components/DebinRequest/DebinRequestFlow";
+import DebinRequestFlow from '../components/DebinRequest/DebinRequestFlow';
 
 export default function DebinRequest() {
   return (
@@ -7,4 +7,4 @@ export default function DebinRequest() {
       <DebinRequestFlow />
     </div>
   );
-} 
+}

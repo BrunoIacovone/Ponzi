@@ -10,7 +10,7 @@ describe('/api/add-funds (e2e)', () => {
   it('should reject unauthorized', () => {
     return request(TestUtils.app.getHttpServer())
       .post('/api/add-funds')
-      .send({ amount: 100, currency: 'USD' })
+      .send({ amount: 100 })
       .expect(401);
   });
 
@@ -18,7 +18,7 @@ describe('/api/add-funds (e2e)', () => {
     return request(TestUtils.app.getHttpServer())
       .post('/api/add-funds')
       .set(TestUtils.getAuthHeader())
-      .send({ amount: 100, currency: 'USD' })
+      .send({ amount: 100 })
       .expect(201)
       .expect((res) => {
         expect(res.body).toHaveProperty('balance');
@@ -37,7 +37,7 @@ describe('/api/add-funds (e2e)', () => {
     return request(TestUtils.app.getHttpServer())
       .post('/api/add-funds')
       .set(TestUtils.getAuthHeader())
-      .send({ amount: -100, currency: 'USD' })
+      .send({ amount: -100 })
       .expect(400);
   });
 

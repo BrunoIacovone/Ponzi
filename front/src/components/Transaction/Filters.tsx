@@ -1,4 +1,3 @@
-
 type FiltersProps = {
   type: TransactionType;
   onTypeChange: (type: TransactionType) => void;
@@ -22,7 +21,10 @@ export default function Filters({
 }: FiltersProps) {
   return (
     <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-      <select value={type} onChange={e => onTypeChange(e.target.value as TransactionType)}>
+      <select
+        value={type}
+        onChange={(e) => onTypeChange(e.target.value as TransactionType)}
+      >
         <option value={TransactionType.All}>All</option>
         <option value={TransactionType.Income}>Income</option>
         <option value={TransactionType.Expense}>Expense</option>
@@ -31,22 +33,22 @@ export default function Filters({
       <input
         type="date"
         value={fromDate}
-        onChange={e => onFromDateChange(e.target.value)}
+        onChange={(e) => onFromDateChange(e.target.value)}
         placeholder={fromPlaceholder}
       />
       <input
         type="date"
         value={toDate}
-        onChange={e => onToDateChange(e.target.value)}
+        onChange={(e) => onToDateChange(e.target.value)}
         placeholder={toPlaceholder}
       />
     </div>
   );
-} 
+}
 
 export enum TransactionType {
-  All = "all",
-  Income = "income",
-  Expense = "expense",
-  Transfer = "transfer",
+  All = 'all',
+  Income = 'income',
+  Expense = 'expense',
+  Transfer = 'transfer',
 }

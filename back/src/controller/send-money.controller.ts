@@ -5,10 +5,13 @@ import {
   UseGuards,
   Body,
   BadRequestException,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
-import { getIdFromEmail, sendMoney } from '../services/wallet.service';
+import { SendMoneyDto } from '../dto/send-money.dto';
+import { SendMoneyService } from '../services/send-money.service';
 
 interface AuthenticatedRequest extends Request {
   user: { uid: string };
@@ -16,27 +19,21 @@ interface AuthenticatedRequest extends Request {
 
 @Controller('api/send-money')
 export class SendMoneyController {
+  constructor(private readonly service: SendMoneyService) {}
+
   @UseGuards(FirebaseAuthGuard)
   @Post()
-  async send(
-    @Req() req: AuthenticatedRequest,
-    @Body() body: { recipientMail: string; amount: number },
-  ) {
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async send(@Req() req: AuthenticatedRequest, @Body() body: SendMoneyDto) {
     const { recipientMail, amount } = body;
-
-    console.log('Recipient Mail:', recipientMail);
-
-    const recipientUid = await getIdFromEmail(recipientMail);
-
+    const recipientUid = await this.service.getIdFromEmail(recipientMail);
     if (!recipientUid) {
       throw new BadRequestException('Recipient mail is invalid');
     }
-    if (amount === undefined || amount === null) {
-      throw new BadRequestException('Amount is required');
+    const senderUid = req.user.uid;
+    if (recipientUid === senderUid) {
+      throw new BadRequestException('Cannot send money to yourself');
     }
-    if (amount <= 0) {
-      throw new BadRequestException('Amount must be positive');
-    }
-    return await sendMoney(req.user.uid, recipientUid, amount);
+    return await this.service.sendMoney(req.user.uid, recipientUid, amount);
   }
 }
