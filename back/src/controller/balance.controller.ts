@@ -14,6 +14,6 @@ export class BalanceController {
   @UseGuards(FirebaseAuthGuard)
   @Get()
   async get(@Req() req: AuthenticatedRequest) {
-    return await this.service.getBalance(req.user.uid);
+    return { balance: await this.service.getBalance(req.user.uid) };
   }
 }
