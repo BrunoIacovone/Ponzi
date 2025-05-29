@@ -1,4 +1,10 @@
-import { getDatabase, ref, onValue, off, DatabaseReference } from 'firebase/database';
+import {
+  getDatabase,
+  ref,
+  onValue,
+  off,
+  DatabaseReference,
+} from 'firebase/database';
 
 type Callback<T> = (data: T) => void;
 
