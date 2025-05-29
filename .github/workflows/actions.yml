@@ -28,7 +28,7 @@ jobs:
 
       - name: Create firebase-service-account.json
         run: |
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > back/firebase-service-account.json
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > back/firebase-service-account.json
 
       - name: Build the server
         run: npm run build
