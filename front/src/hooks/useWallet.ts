@@ -86,8 +86,8 @@ export function useSendMoney() {
       setError(null);
       return await sendMoney(recipientMail, amount);
     } catch (err: any) {
-      console.error('Error sending money:', err);
-      setError(err.response?.data?.message || 'Unexpected error');
+      console.error('Error sending money money:', JSON.stringify(err, null, 2));
+      setError(err.response?.data?.message || 'Unexpected errorr');
     } finally {
       setLoading(false);
     }
