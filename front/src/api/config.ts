@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { auth } from '../auth/firebase';
-import {onAuthStateChanged} from "firebase/auth";
-import {Capacitor} from "@capacitor/core";
+import { onAuthStateChanged } from 'firebase/auth';
+import { Capacitor } from '@capacitor/core';
 
 const isMobile = Capacitor.isNativePlatform();
 
@@ -20,7 +20,7 @@ let firebaseReady = new Promise<void>((resolve) => {
 
 api.interceptors.request.use(async (config) => {
   await firebaseReady;
-  console.log("Current user:", auth.currentUser);
+  console.log('Current user:', auth.currentUser);
   const token = await auth.currentUser?.getIdToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
