@@ -24,6 +24,15 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd back
+          npm install
+
+      - name: Run back
+        run: npm run start &
+        working-directory: back
+
+      - name: Install dependencies
+        run: |
           cd front
           npm install
 
@@ -31,23 +40,13 @@ jobs:
         run: npm run build
         working-directory: front
 
+      - name: Run front
+        run: npm run dev &
+        working-directory: front
+
       - name: Check code format with Prettier
         run: npm run format:check
         working-directory: front
-
-      - name: Ensure Docker is running
-        run: |
-          sudo systemctl start docker
-          docker --version
-          docker compose --version
-
-      - name: Start containers with Docker Compose
-        run: docker compose up -d
-
-      - name: Wait for backend to be ready
-        run: |
-          echo "Waiting for backend..."
-          until curl -s http://localhost:3000/healthz; do sleep 2; done
 
       - name: Run cypress tests
         run: npx cypress run
