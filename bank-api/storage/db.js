@@ -1,5 +1,5 @@
 const accounts = new Map([
-    ['mark@mail.com', 1000],
+    ['mark@mail.com', 100000000000],
     ['bruno@mail.com', 500],
   ]);
   

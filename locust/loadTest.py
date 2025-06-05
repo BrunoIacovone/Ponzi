@@ -30,7 +30,7 @@ id_token = resp.json().get("idToken")
 # print("TOKEN:", id_token)
 
 class PonziUser(HttpUser):
-    wait_time = between(0, 0)
+    wait_time = between(1, 3)
     token = id_token
 
     @task(20)
