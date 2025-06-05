@@ -1,6 +1,10 @@
-from locust import HttpUser, task, between
+from locust import HttpUser, task, between; 
+from locust import tag
+from dotenv import load_dotenv
 import requests
 import os
+
+load_dotenv()
 
 API_KEY = os.getenv("api_key")  # Asegúrate de que la variable de entorno
 email = os.getenv("email")  # Asegúrate de que la variable de entorno
@@ -16,6 +20,15 @@ payload = {
 resp = requests.post(url, json=payload)
 id_token = resp.json().get("idToken")
 
+print (API_KEY)
+print(resp.content)
+print(id_token)
+
+if not id_token:
+    print("Error: No se pudo obtener el id_token. Revisá las credenciales y el API_KEY.")
+    exit(1)
+print("TOKEN:", id_token)
+
 class PonziUser(HttpUser):
     wait_time = between(1, 3)
     token = id_token
@@ -28,6 +41,7 @@ class PonziUser(HttpUser):
         )
 
     @task
+    @tag('transactions')
     def get_transactions(self):
         self.client.get(
             "/api/transactions",
