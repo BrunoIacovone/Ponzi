@@ -2,28 +2,36 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import admin from '../src/firebase';
-import { initializeApp, getApps, deleteApp } from 'firebase/app';
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  connectAuthEmulator,
-} from 'firebase/auth';
-import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
+import { initializeApp, getApps, deleteApp, FirebaseApp } from 'firebase/app';
+import { getAuth, signInWithCustomToken, UserCredential } from 'firebase/auth';
 import {
   getApps as getAdminApps,
   deleteApp as deleteAdminApp,
 } from 'firebase-admin/app';
+import { TestingModuleBuilder, TestingModule } from '@nestjs/testing';
 
 export class TestUtils {
   static app: INestApplication;
-  static testToken: string;
-  static testUid: string;
-  static firebaseApp: any;
+  static firebaseApp: FirebaseApp;
+  private static createdUserUIDs: string[] = [];
 
-  static async initializeApp() {
-    const moduleFixture = await Test.createTestingModule({
+  static async initializeApp(
+    moduleBuilder?: (builder: TestingModuleBuilder) => TestingModuleBuilder,
+  ) {
+    // Prevent admin SDK from using emulator env variables
+    delete process.env.FIREBASE_AUTH_EMULATOR_HOST;
+    delete process.env.FIREBASE_DATABASE_EMULATOR_HOST;
+
+    let builder = Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    });
+
+    if (moduleBuilder) {
+      builder = moduleBuilder(builder);
+    }
+
+    const moduleFixture: TestingModule = await builder.compile();
+
     this.app = moduleFixture.createNestApplication();
     await this.app.init();
 
@@ -32,41 +40,41 @@ export class TestUtils {
         apiKey: process.env.FIREBASE_API_KEY!,
         authDomain: process.env.FIREBASE_AUTH_DOMAIN!,
         projectId: process.env.FIREBASE_PROJECT_ID!,
-        databaseURL: process.env.FIREBASE_DATABASE_URL_EMULATOR,
+        databaseURL: process.env.FIREBASE_DATABASE_URL,
       });
     } else {
       this.firebaseApp = getApps()[0];
     }
-
-    if (process.env.FIREBASE_DATABASE_EMULATOR_HOST) {
-      const db = getDatabase(this.firebaseApp);
-      const url = new URL(
-        `http://${process.env.FIREBASE_DATABASE_EMULATOR_HOST}`,
-      );
-      connectDatabaseEmulator(db, url.hostname, parseInt(url.port, 10));
-    }
-
-    if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
-      const auth = getAuth(this.firebaseApp);
-      const url = new URL(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}`);
-      connectAuthEmulator(auth, `http://${url.hostname}:${url.port}`);
-    }
   }
 
-  static async loginTestUser() {
+  static async createTestUser(
+    email = `test-user-${Date.now()}@test.com`,
+    password = 'password123',
+  ): Promise<{ uid: string; token: string; email: string }> {
+    const userRecord = await admin.auth().createUser({ email, password });
+    const customToken = await admin.auth().createCustomToken(userRecord.uid);
     const auth = getAuth(this.firebaseApp);
-
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      process.env.FIREBASE_TEST_EMAIL!,
-      process.env.FIREBASE_TEST_PASSWORD!,
-    );
-    this.testToken = await userCredential.user.getIdToken();
-    this.testUid = userCredential.user.uid;
+    const userCredential = await signInWithCustomToken(auth, customToken);
+    const token = await userCredential.user.getIdToken();
+    this.createdUserUIDs.push(userRecord.uid);
+    return { uid: userRecord.uid, token, email };
   }
 
-  static getAuthHeader() {
-    return { Authorization: `Bearer ${this.testToken}` };
+  static async getAuthHeader(token: string) {
+    return { Authorization: `Bearer ${token}` };
+  }
+
+  static getDb() {
+    return admin.database();
+  }
+
+  static async setBalance(uid: string, amount: number) {
+    await this.getDb().ref(`users/${uid}/balance`).set(amount);
+  }
+
+  static async getBalance(uid: string): Promise<number> {
+    const snapshot = await this.getDb().ref(`users/${uid}/balance`).get();
+    return snapshot.val() || 0;
   }
 
   static async cleanup() {
@@ -75,6 +83,17 @@ export class TestUtils {
     }
     if (this.firebaseApp) {
       await deleteApp(this.firebaseApp);
+    }
+    // Delete all users created during tests
+    if (this.createdUserUIDs.length > 0) {
+      await admin.auth().deleteUsers(this.createdUserUIDs);
+      // Also clean up their data in the RTDB
+      const updates = {};
+      this.createdUserUIDs.forEach((uid) => {
+        updates[`users/${uid}`] = null;
+      });
+      await this.getDb().ref().update(updates);
+      this.createdUserUIDs = [];
     }
     if (process.env.NODE_ENV === 'test') {
       await Promise.all(getAdminApps().map(deleteAdminApp));

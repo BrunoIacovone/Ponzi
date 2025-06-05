@@ -13,6 +13,7 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { DomainException } from 'src/exceptions/domain.exception';
 
 @Catch()
 export class FirebaseExceptionFilter implements ExceptionFilter {
@@ -32,9 +33,10 @@ export class FirebaseExceptionFilter implements ExceptionFilter {
     }
 
     const errorMap = {
+      // Firebase auth errors
       PERMISSION_DENIED: () => new ForbiddenException('No permission'),
       USER_NOT_FOUND: () => new NotFoundException('User not found'),
-      INSUFFICIENT_FUNDS: () => new BadRequestException('Insufficient funds'),
+      // Custom domain errors
       INVALID_AMOUNT: () => new UnprocessableEntityException('Invalid amount'),
     };
 
