@@ -18,3 +18,13 @@ tambien esta
 npx cypress run
 ```
 pero es mejor el open
+
+
+para correrlo en mobile tirate un
+```bash
+npm run build
+npx cap sync
+npx cap open android
+```
+
+eso te buildea el proyecto, te synquea el build en android y desp te lo abre en android studio
