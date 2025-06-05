@@ -1,7 +1,6 @@
 /// <reference types="cypress" />
 
 describe('Add Funds Page', () => {
-
   beforeEach(() => {
     cy.login();
   });

@@ -1,7 +1,6 @@
 /// <reference types="cypress" />
 
 describe('Send Money Page', () => {
-
   beforeEach(() => {
     cy.login();
   });
