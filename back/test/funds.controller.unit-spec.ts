@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { FundsController } from 'src/controller/funds.controller';
-import { FundsService } from 'src/services/funds.service';
-import { AddFundsDto } from 'src/dto/add-funds.dto';
+import { FundsController } from '../src/controller/funds.controller';
+import { FundsService } from '../src/services/funds.service';
+import { AddFundsDto } from '../src/dto/add-funds.dto';
 
 describe('FundsController', () => {
   let controller: FundsController;

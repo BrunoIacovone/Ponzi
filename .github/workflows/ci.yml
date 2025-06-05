@@ -34,3 +34,7 @@ jobs:
       - name: Check code format with Prettier
         run: npm run format:check
         working-directory: front
+
+      - name: Run cypress tests
+        run: npx cypress run
+        working-directory: front

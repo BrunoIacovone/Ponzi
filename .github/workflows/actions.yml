@@ -37,3 +37,7 @@ jobs:
       - name: Check formatting
         run: npm run format:check
         working-directory: back
+
+      - name: Run tests
+        run: npm run test
+        working-directory: back

@@ -22,6 +22,12 @@ Cypress.Commands.add('login', () => {
   cy.get('input[name=password]').type(password);
   cy.get('button[type=submit]').click();
 });
+
+Cypress.Commands.add('logout', () => {
+  cy.visit('/');
+  cy.get('button[name=logout]').click();
+});
+
 //
 //
 // -- This is a child command --
@@ -49,6 +55,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       login(): Chainable<void>;
+      logout(): Chainable<void>;
     }
   }
 }
