@@ -15,7 +15,11 @@ export default function Login() {
     setLoading(true);
     setError('');
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       const token = await userCredential.user.getIdToken();
       localStorage.setItem('token', token);
     } catch (err: any) {
@@ -26,45 +30,116 @@ export default function Login() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f6f6f6', padding: 16 }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#f6f6f6',
+        padding: 16,
+      }}
+    >
       <form
         onSubmit={handleLogin}
-        style={{ background: '#fff', boxShadow: '0 2px 16px rgba(0,0,0,0.07)', borderRadius: 16, padding: 32, width: '100%', maxWidth: 360 }}
+        style={{
+          background: '#fff',
+          boxShadow: '0 2px 16px rgba(0,0,0,0.07)',
+          borderRadius: 16,
+          padding: 32,
+          width: '100%',
+          maxWidth: 360,
+        }}
       >
-        <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 24, textAlign: 'center', color: '#222' }}>Iniciar sesión</h2>
-        {error && <p style={{ color: '#e53e3e', marginBottom: 16, fontSize: 14 }}>{error}</p>}
+        <h2
+          style={{
+            fontSize: 24,
+            fontWeight: 700,
+            marginBottom: 24,
+            textAlign: 'center',
+            color: '#222',
+          }}
+        >
+          Iniciar sesión
+        </h2>
+        {error && (
+          <p style={{ color: '#e53e3e', marginBottom: 16, fontSize: 14 }}>
+            {error}
+          </p>
+        )}
         <div style={{ marginBottom: 16 }}>
-          <label style={{ display: 'block', marginBottom: 4, color: '#555' }}>Email</label>
+          <label style={{ display: 'block', marginBottom: 4, color: '#555' }}>
+            Email
+          </label>
           <input
             type="email"
             name={'email'}
-            style={{ width: '100%', border: '1px solid #ddd', borderRadius: 8, padding: '10px 12px', fontSize: 16 }}
+            style={{
+              width: '100%',
+              border: '1px solid #ddd',
+              borderRadius: 8,
+              padding: '10px 12px',
+              fontSize: 16,
+            }}
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
         <div style={{ marginBottom: 24 }}>
-          <label style={{ display: 'block', marginBottom: 4, color: '#555' }}>Contraseña</label>
+          <label style={{ display: 'block', marginBottom: 4, color: '#555' }}>
+            Contraseña
+          </label>
           <input
             type="password"
             name={'password'}
-            style={{ width: '100%', border: '1px solid #ddd', borderRadius: 8, padding: '10px 12px', fontSize: 16 }}
+            style={{
+              width: '100%',
+              border: '1px solid #ddd',
+              borderRadius: 8,
+              padding: '10px 12px',
+              fontSize: 16,
+            }}
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
         <button
           type="submit"
-          style={{ width: '100%', background: '#222', color: '#fff', padding: '12px 0', borderRadius: 8, fontWeight: 600, fontSize: 16, border: 'none', marginBottom: 12, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
+          style={{
+            width: '100%',
+            background: '#222',
+            color: '#fff',
+            padding: '12px 0',
+            borderRadius: 8,
+            fontWeight: 600,
+            fontSize: 16,
+            border: 'none',
+            marginBottom: 12,
+            cursor: loading ? 'not-allowed' : 'pointer',
+            opacity: loading ? 0.7 : 1,
+          }}
           disabled={loading}
         >
           {loading ? 'Ingresando...' : 'Ingresar'}
         </button>
         <div style={{ textAlign: 'center', marginTop: 8 }}>
-          <span style={{ color: '#555', fontSize: 14 }}>¿No tienes cuenta? </span>
-          <button type="button" style={{ background: 'none', border: 'none', color: '#007bff', textDecoration: 'underline', cursor: 'pointer', fontSize: 14 }} onClick={() => navigate('/signup')}>
+          <span style={{ color: '#555', fontSize: 14 }}>
+            ¿No tienes cuenta?{' '}
+          </span>
+          <button
+            type="button"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#007bff',
+              textDecoration: 'underline',
+              cursor: 'pointer',
+              fontSize: 14,
+            }}
+            onClick={() => navigate('/signup')}
+          >
             Crear cuenta
           </button>
         </div>

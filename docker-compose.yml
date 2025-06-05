@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./back
+      dockerfile: DockerFile
+    ports:
+      - "3000:3000"
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account.json
+    volumes:
+      - ./back:/back
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./front
+      dockerfile: DockerFile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./front:/front
+    restart: unless-stopped

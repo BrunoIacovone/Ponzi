@@ -1,0 +1,39 @@
+name: CI - Back
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.6.0'
+
+      - name: Install dependencies
+        run: |
+          cd back
+          npm install
+
+      - name: Create firebase-service-account.json
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > back/firebase-service-account.json
+
+      - name: Build the server
+        run: npm run build
+        working-directory: back
+
+      - name: Check formatting
+        run: npm run format:check
+        working-directory: back

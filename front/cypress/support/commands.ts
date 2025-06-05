@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
-import firebase from "firebase/compat";
-import "firebase/auth"
+import firebase from 'firebase/compat';
+import 'firebase/auth';
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -17,11 +17,11 @@ Cypress.Commands.add('login', () => {
   const email = Cypress.env('CYPRESS_EMAIL');
   const password = Cypress.env('CYPRESS_PASSWORD');
 
-  cy.visit("/login");
-  cy.get("input[name=email]").type(email);
-  cy.get("input[name=password]").type(password);
-  cy.get("button[type=submit]").click();
-})
+  cy.visit('/login');
+  cy.get('input[name=email]').type(email);
+  cy.get('input[name=password]').type(password);
+  cy.get('button[type=submit]').click();
+});
 //
 //
 // -- This is a child command --
@@ -53,4 +53,4 @@ declare global {
   }
 }
 
-export {}
+export {};
