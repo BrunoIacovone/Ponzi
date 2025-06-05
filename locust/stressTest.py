@@ -20,27 +20,27 @@ payload = {
 resp = requests.post(url, json=payload)
 id_token = resp.json().get("idToken")
 
-print (API_KEY)
-print(resp.content)
-print(id_token)
-
-if not id_token:
-    print("Error: No se pudo obtener el id_token. Revisá las credenciales y el API_KEY.")
-    exit(1)
-print("TOKEN:", id_token)
+# print (API_KEY)
+# print(resp.content)
+# print(id_token)
+#
+# if not id_token:
+#     print("Error: No se pudo obtener el id_token. Revisá las credenciales y el API_KEY.")
+#     exit(1)
+# print("TOKEN:", id_token)
 
 class PonziUser(HttpUser):
     wait_time = between(1, 3)
     token = id_token
 
-    @task
+    @task(20)
     def get_balance(self):
         self.client.get(
             "/api/balance",
             headers={"Authorization": f"Bearer {self.token}"}
         )
 
-    @task
+    @task(20)
     @tag('transactions')
     def get_transactions(self):
         self.client.get(
@@ -48,7 +48,7 @@ class PonziUser(HttpUser):
             headers={"Authorization": f"Bearer {self.token}"}
         )
 
-    @task
+    @task(10)
     def add_funds(self):
         self.client.post(
             "/api/add-funds",
@@ -56,7 +56,7 @@ class PonziUser(HttpUser):
             headers={"Authorization": f"Bearer {self.token}"}
         )
 
-    @task
+    @task(10)
     def send_money(self):
         # Cambiá recipientMail por un usuario válido de prueba
         self.client.post(
