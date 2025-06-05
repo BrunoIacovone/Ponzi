@@ -35,8 +35,19 @@ jobs:
         run: npm run format:check
         working-directory: front
 
-      - name: Start Docker
+      - name: Ensure Docker is running
+        run: |
+          sudo systemctl start docker
+          docker --version
+          docker-compose --version
+
+      - name: Start containers with Docker Compose
         run: docker-compose up -d
+
+      - name: Wait for backend to be ready
+        run: |
+          echo "Waiting for backend..."
+          until curl -s http://localhost:3000/healthz; do sleep 2; done
 
       - name: Run cypress tests
         run: npx cypress run
