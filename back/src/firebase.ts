@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 import * as dotenv from 'dotenv';
-import serviceAccount from '../firebase-service-account.json';
+import serviceAccount from 'firebase-service-account.json';
 dotenv.config({
   path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
 });
