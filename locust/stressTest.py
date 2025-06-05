@@ -20,29 +20,32 @@ class PonziUser(HttpUser):
     wait_time = between(1, 3)
     token = id_token
 
-    @task
+    @task(4)
     def get_balance(self):
         self.client.get(
             "/api/balance",
             headers={"Authorization": f"Bearer {self.token}"}
         )
 
-    @task
+    @task(4)
     def get_transactions(self):
+
         self.client.get(
             "/api/transactions",
-            headers={"Authorization": f"Bearer {self.token}"}
+            headers={"Authorization": f"Bearer {self.token}"},
+            body={"amount": 10, "bankEmail": "mark@mail.com"}
         )
 
-    @task
+    @task(1)
+    @tag("add_funds")
     def add_funds(self):
         self.client.post(
-            "/api/add-funds",
+            "/api/debin",
             json={"amount": 10},
             headers={"Authorization": f"Bearer {self.token}"}
         )
 
-    @task
+    @task(1)
     def send_money(self):
         # Cambiá recipientMail por un usuario válido de prueba
         self.client.post(
@@ -51,4 +54,4 @@ class PonziUser(HttpUser):
             headers={"Authorization": f"Bearer {self.token}"}
         )
 
-##Para ejecutar usar: locust -f stressTest.py --host http://localhost:3000
+##Para ejecutar usar: locust -f stressTest.py --host http://localhost:3000 --tag add_funds
