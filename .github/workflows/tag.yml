@@ -6,9 +6,8 @@ permissions:
 on:
   push:
     branches:
-      - Ci-Cd-upgraded
- #     - main
-  #    - dev
+      - main
+      - dev
 
 jobs:
   create-tag:
@@ -43,7 +42,7 @@ jobs:
             major=$((major + 1))
             minor=0
             patch=0
-          elif [ "$branch" = "Ci-Cd-upgraded" ]; then
+          elif [ "$branch" = "dev" ]; then
             minor=$((minor + 1))
             patch=0
           fi
