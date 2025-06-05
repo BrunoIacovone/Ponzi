@@ -10,6 +10,8 @@ import { SendMoneyService } from './services/send-money.service';
 import { BalanceService } from './services/balance.service';
 import { DebinBankClientService } from './services/debin-bank-client.service';
 import { HttpModule } from '@nestjs/axios';
+import { BankService } from './services/bank.service';
+import { BankController } from './controller/bank.controller';
 
 @Module({
   imports: [HttpModule],
@@ -18,6 +20,7 @@ import { HttpModule } from '@nestjs/axios';
     TransactionsController,
     DebinController,
     SendMoneyController,
+    BankController,
   ],
   providers: [
     WalletRepository,
@@ -26,6 +29,7 @@ import { HttpModule } from '@nestjs/axios';
     SendMoneyService,
     BalanceService,
     DebinBankClientService,
+    BankService,
   ],
 })
 export class AppModule {}
