@@ -29,12 +29,15 @@ export function useGetBalance() {
   return { getBalance: fetchBalance, loading, error };
 }
 
-export function useAddFunds() {
+export function useDebin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const addFunds = async (amount: number): Promise<AddFundsResponse | void> => {
-    const parsed = addAmountSchema.safeParse({ amount });
+  const debin = async (
+    amount: number,
+    bankEmail: string,
+  ): Promise<AddFundsResponse | void> => {
+    const parsed = addAmountSchema.safeParse({ amount, bankEmail });
     if (!parsed.success) {
       setError(parsed.error.errors[0].message);
       return;
@@ -42,7 +45,7 @@ export function useAddFunds() {
     try {
       setLoading(true);
       setError(null);
-      return await addMoney(amount);
+      return await addMoney(amount, bankEmail);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Unexpected error');
     } finally {
@@ -50,7 +53,7 @@ export function useAddFunds() {
     }
   };
 
-  return { addFunds, loading, error };
+  return { debin, loading, error };
 }
 
 export function useGetTransactions() {

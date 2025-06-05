@@ -16,8 +16,11 @@ export async function getBalance(): Promise<Amount> {
   return response.data;
 }
 
-export async function addMoney(amount: number): Promise<AddFundsResponse> {
-  const response = await api.post('/api/add-funds', { amount });
+export async function addMoney(
+  amount: number,
+  bankEmail: string,
+): Promise<AddFundsResponse> {
+  const response = await api.post('/api/debin', { amount, bankEmail });
   return response.data;
 }
 
