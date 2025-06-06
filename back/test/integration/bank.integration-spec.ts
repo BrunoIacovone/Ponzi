@@ -2,7 +2,7 @@ import request from 'supertest';
 import { TestUtils } from '../test-utils';
 import { BankDto } from 'src/dto/bank.dto';
 
-describe('/api/bank (e2e)', () => {
+describe('/api/bank (integration)', () => {
   let user: { uid: string; token: string; email: string };
 
   beforeAll(async () => {
@@ -15,27 +15,22 @@ describe('/api/bank (e2e)', () => {
   });
 
   beforeEach(async () => {
-    // Ensure a clean slate for each test
     await TestUtils.getDb().ref(`users/${user.uid}`).set(null);
   });
 
   it('should add funds to the user account', async () => {
-    // Arrange
     const initialBalance = await TestUtils.getBalance(user.uid);
     expect(initialBalance).toBe(0);
     const dto: BankDto = { bankEmail: user.email, amount: 250 };
 
-    // Act
     await request(TestUtils.app.getHttpServer())
       .post('/api/bank')
       .send(dto)
       .expect(201);
-
-    // Assert
+    
     const finalBalance = await TestUtils.getBalance(user.uid);
     expect(finalBalance).toBe(250);
 
-    // Also check the transaction log
     const txs = (
       await TestUtils.getDb().ref(`users/${user.uid}/transactions`).get()
     ).val();
@@ -54,6 +49,10 @@ describe('/api/bank (e2e)', () => {
     return request(TestUtils.app.getHttpServer())
       .post('/api/bank')
       .send(dto)
-      .expect(500); // The service throws a generic error
+      .expect(404) 
+      .expect((res) => {
+        expect(res.body.message).toContain('User with email non-existent-user@test.com not found');
+        expect(res.body.error).toBe('USER_NOT_FOUND');
+      });
   });
 });

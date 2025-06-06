@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { TestUtils } from '../test-utils';
 
-describe('/api/balance (e2e)', () => {
+describe('/api/balance (integration)', () => {
   let token: string;
   let uid: string;
 
@@ -13,7 +13,6 @@ describe('/api/balance (e2e)', () => {
   });
 
   beforeEach(async () => {
-    // Clean up user's data before each test
     await TestUtils.getDb().ref(`users/${uid}`).set(null);
   });
 
@@ -28,10 +27,8 @@ describe('/api/balance (e2e)', () => {
   });
 
   it('should return the correct balance for an authorized user', async () => {
-    // Arrange: Set a known balance for the user
     await TestUtils.setBalance(uid, 123.45);
 
-    // Act & Assert
     return request(TestUtils.app.getHttpServer())
       .get('/api/balance')
       .set('Authorization', `Bearer ${token}`)
@@ -43,7 +40,6 @@ describe('/api/balance (e2e)', () => {
   });
 
   it('should return a balance of 0 if the user has no balance set', async () => {
-    // Act & Assert
     return request(TestUtils.app.getHttpServer())
       .get('/api/balance')
       .set('Authorization', `Bearer ${token}`)

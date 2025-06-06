@@ -13,19 +13,13 @@ export class SendMoneyService {
     const now = Date.now();
     const txId = await this.repo.pushKey();
 
-    let senderNameOrEmail = senderUid;
-    try {
-      const senderUser = await this.repo.getUserById(senderUid);
-      senderNameOrEmail =
-        senderUser.displayName || senderUser.email || senderUid;
-    } catch {}
+    const senderUser = await this.repo.getUserById(senderUid);
+    const senderNameOrEmail =
+      senderUser.displayName || senderUser.email || senderUid;
 
-    let recipientNameOrEmail = recipientUid;
-    try {
-      const recipientUser = await this.repo.getUserById(recipientUid);
-      recipientNameOrEmail =
-        recipientUser.displayName || recipientUser.email || recipientUid;
-    } catch {}
+    const recipientUser = await this.repo.getUserById(recipientUid);
+    const recipientNameOrEmail =
+      recipientUser.displayName || recipientUser.email || recipientUid;
 
     const updates: any = {
       [`transfers/${txId}`]: {

@@ -7,13 +7,6 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
-import {
-  BadRequestException,
-  ForbiddenException,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
-import { DomainException } from 'src/exceptions/domain.exception';
 
 @Catch()
 export class FirebaseExceptionFilter implements ExceptionFilter {
@@ -27,39 +20,40 @@ export class FirebaseExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const res = exception.getResponse();
-      this.log(request, status, res);
+      this.log(request, status, res, exception.constructor.name);
       response.status(status).json(res);
       return;
     }
 
-    const errorMap = {
-      // Firebase auth errors
-      PERMISSION_DENIED: () => new ForbiddenException('No permission'),
-      USER_NOT_FOUND: () => new NotFoundException('User not found'),
-      // Custom domain errors
-      INVALID_AMOUNT: () => new UnprocessableEntityException('Invalid amount'),
-    };
+    if (exception.code && exception.code.startsWith('auth/')) {
+      const status = 401;
+      const message = exception.message || 'Authentication error';
+      this.log(request, status, message, exception.code);
+      response.status(status).json({
+        statusCode: status,
+        message,
+        error: 'Unauthorized',
+        code: exception.code,
+      });
+      return;
+    }
 
-    const fallback = () =>
-      new InternalServerErrorException(
-        exception?.message || 'Unexpected error',
-      );
-
-    const exceptionFactory = errorMap[exception?.code] || fallback;
-    const httpError = exceptionFactory();
+    const httpError = new InternalServerErrorException(
+      exception?.message || 'Unexpected error',
+    );
 
     this.log(
       request,
       httpError.getStatus(),
       httpError.getResponse(),
-      exception?.code,
+      exception?.code || 'UNHANDLED_ERROR',
     );
     response.status(httpError.getStatus()).json(httpError.getResponse());
   }
 
   private log(req: Request, status: number, message: any, code?: string) {
     this.logger.error(
-      `[${status}] ${req.method} ${req.originalUrl} | ${code ?? 'UNHANDLED'} - ${
+      `[${status}] ${req.method} ${req.originalUrl} | ${code} - ${
         typeof message === 'string' ? message : JSON.stringify(message)
       }`,
     );

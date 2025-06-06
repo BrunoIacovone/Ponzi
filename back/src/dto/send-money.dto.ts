@@ -1,10 +1,11 @@
-import { IsString, IsNumber, Min } from 'class-validator';
+import { IsString, IsNumber, Min, IsEmail, IsNotEmpty } from 'class-validator';
 
 export class SendMoneyDto {
-  @IsString()
+  @IsEmail()
+  @IsNotEmpty()
   recipientMail: string;
 
   @IsNumber()
-  @Min(0)
+  @Min(1)
   amount: number;
 }

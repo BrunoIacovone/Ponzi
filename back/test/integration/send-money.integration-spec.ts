@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { TestUtils } from '../test-utils';
 
-describe('/api/send-money (e2e)', () => {
+describe('/api/send-money (integration)', () => {
   let sender: { uid: string; token: string; email: string };
   let recipient: { uid: string; token: string; email: string };
 
@@ -10,7 +10,6 @@ describe('/api/send-money (e2e)', () => {
   });
 
   beforeEach(async () => {
-    // Create fresh users for each test to ensure isolation
     sender = await TestUtils.createTestUser();
     recipient = await TestUtils.createTestUser();
   });
@@ -33,7 +32,8 @@ describe('/api/send-money (e2e)', () => {
       .send({ recipientMail: 'invalid-email@test.com', amount: 50 })
       .expect(400)
       .expect((res) => {
-        expect(res.body.message).toContain('Recipient mail is invalid');
+        expect(res.body.message).toContain('Recipient mail is invalid: invalid-email@test.com');
+        expect(res.body.error).toBe('INVALID_RECIPIENT');
       });
   });
 
@@ -45,6 +45,7 @@ describe('/api/send-money (e2e)', () => {
       .expect(400)
       .expect((res) => {
         expect(res.body.message).toContain('Cannot send money to yourself');
+        expect(res.body.error).toBe('CANNOT_SEND_TO_SELF');
       });
   });
 
@@ -58,29 +59,25 @@ describe('/api/send-money (e2e)', () => {
       .expect(400) 
       .expect((res) => {
         expect(res.body.message).toContain('Insufficient funds');
+        expect(res.body.error).toBe('INSUFFICIENT_FUNDS');
       });
   });
 
   it('should perform a successful transfer and update balances and transactions for both users', async () => {
-    // Arrange
     await TestUtils.setBalance(sender.uid, 100);
     await TestUtils.setBalance(recipient.uid, 50);
 
-    // Act
     await request(TestUtils.app.getHttpServer())
       .post('/api/send-money')
       .set('Authorization', `Bearer ${sender.token}`)
       .send({ recipientMail: recipient.email, amount: 75 })
       .expect(201);
 
-    // Assert
-    // 1. Check final balances
     const senderBalance = await TestUtils.getBalance(sender.uid);
     const recipientBalance = await TestUtils.getBalance(recipient.uid);
     expect(senderBalance).toBe(25);
     expect(recipientBalance).toBe(125);
 
-    // 2. Check sender's transaction log
     const senderTxs = (
       await TestUtils.getDb().ref(`users/${sender.uid}/transactions`).get()
     ).val();
@@ -89,7 +86,6 @@ describe('/api/send-money (e2e)', () => {
     expect(senderTxs[senderTxId].amount).toBe(75);
     expect(senderTxs[senderTxId].user).toBe(recipient.uid);
 
-    // 3. Check recipient's transaction log
     const recipientTxs = (
       await TestUtils.getDb().ref(`users/${recipient.uid}/transactions`).get()
     ).val();

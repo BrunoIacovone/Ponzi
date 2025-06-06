@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { TestUtils } from '../test-utils';
 
-describe('/api/transactions (e2e)', () => {
+describe('/api/transactions (integration)', () => {
   let token: string;
   let uid: string;
   let otherUser: { uid: string; email: string };
@@ -11,7 +11,7 @@ describe('/api/transactions (e2e)', () => {
     const mainUser = await TestUtils.createTestUser();
     token = mainUser.token;
     uid = mainUser.uid;
-    otherUser = await TestUtils.createTestUser(); // For transaction details
+    otherUser = await TestUtils.createTestUser();
   });
 
   afterAll(async () => {
@@ -32,7 +32,6 @@ describe('/api/transactions (e2e)', () => {
   });
 
   it('should return transactions for an authorized user, sorted by timestamp', async () => {
-    // Arrange: Create some transactions directly in the DB
     const tx1 = {
       direction: 'sent',
       user: otherUser.uid,
@@ -48,7 +47,6 @@ describe('/api/transactions (e2e)', () => {
     await TestUtils.getDb().ref(`users/${uid}/transactions/tx1`).set(tx1);
     await TestUtils.getDb().ref(`users/${uid}/transactions/tx2`).set(tx2);
 
-    // Act & Assert
     return request(TestUtils.app.getHttpServer())
       .get('/api/transactions')
       .set('Authorization', `Bearer ${token}`)
@@ -56,12 +54,10 @@ describe('/api/transactions (e2e)', () => {
       .expect((res) => {
         expect(Array.isArray(res.body)).toBe(true);
         expect(res.body.length).toBe(2);
-        // Transactions should be sorted by timestamp descending
         expect(res.body[0].id).toBe('tx2');
         expect(res.body[0].amount).toBe(50);
         expect(res.body[1].id).toBe('tx1');
         expect(res.body[1].amount).toBe(10);
-        // Check that the user name/email was populated
         expect(res.body[1].user).toBe(otherUser.email);
       });
   }, 30000);

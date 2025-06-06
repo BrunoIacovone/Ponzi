@@ -1,14 +1,10 @@
 import { INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import admin from '../src/firebase';
-import { initializeApp, getApps, deleteApp, FirebaseApp } from 'firebase/app';
-import { getAuth, signInWithCustomToken, UserCredential } from 'firebase/auth';
-import {
-  getApps as getAdminApps,
-  deleteApp as deleteAdminApp,
-} from 'firebase-admin/app';
-import { TestingModuleBuilder, TestingModule } from '@nestjs/testing';
+import { FirebaseApp, deleteApp, getApps, initializeApp } from 'firebase/app';
+import { getAuth, signInWithCustomToken } from 'firebase/auth';
+import { deleteApp as deleteAdminApp, getApps as getAdminApps } from 'firebase-admin/app';
 
 export class TestUtils {
   static app: INestApplication;
@@ -18,10 +14,6 @@ export class TestUtils {
   static async initializeApp(
     moduleBuilder?: (builder: TestingModuleBuilder) => TestingModuleBuilder,
   ) {
-    // Prevent admin SDK from using emulator env variables
-    delete process.env.FIREBASE_AUTH_EMULATOR_HOST;
-    delete process.env.FIREBASE_DATABASE_EMULATOR_HOST;
-
     let builder = Test.createTestingModule({
       imports: [AppModule],
     });
@@ -60,7 +52,7 @@ export class TestUtils {
     return { uid: userRecord.uid, token, email };
   }
 
-  static async getAuthHeader(token: string) {
+  static getAuthHeader(token: string) {
     return { Authorization: `Bearer ${token}` };
   }
 
@@ -81,13 +73,13 @@ export class TestUtils {
     if (this.app) {
       await this.app.close();
     }
+
     if (this.firebaseApp) {
       await deleteApp(this.firebaseApp);
     }
-    // Delete all users created during tests
+    
     if (this.createdUserUIDs.length > 0) {
       await admin.auth().deleteUsers(this.createdUserUIDs);
-      // Also clean up their data in the RTDB
       const updates = {};
       this.createdUserUIDs.forEach((uid) => {
         updates[`users/${uid}`] = null;
@@ -95,8 +87,7 @@ export class TestUtils {
       await this.getDb().ref().update(updates);
       this.createdUserUIDs = [];
     }
-    if (process.env.NODE_ENV === 'test') {
-      await Promise.all(getAdminApps().map(deleteAdminApp));
-    }
+    
+    await Promise.all(getAdminApps().map(deleteAdminApp));
   }
 }
