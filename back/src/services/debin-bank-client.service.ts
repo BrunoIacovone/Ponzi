@@ -4,7 +4,8 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class DebinBankClientService {
-  private readonly baseUrl = 'http://localhost:3005';
+  private readonly baseUrl =
+    process.env.BANK_API_URL || 'http://localhost:3005';
 
   constructor(private readonly http: HttpService) {}
 

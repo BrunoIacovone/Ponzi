@@ -34,7 +34,6 @@ export default function SendMoneyForm() {
         required
         onChange={(e) => setRecipient(e.target.value)}
       />
-      <input type="text" placeholder="Description (optional)" />
       {error && <div style={{ color: 'red', marginTop: 8 }}>{error}</div>}
       <button type="submit" onClick={handleSubmit}>
         Send

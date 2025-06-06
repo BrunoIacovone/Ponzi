@@ -1,11 +1,11 @@
-import { IsNumber, Min, IsString, IsNotEmpty } from 'class-validator';
+import { IsNumber, Min, IsEmail, IsNotEmpty } from 'class-validator';
 
 export class DebinDto {
   @IsNumber()
-  @Min(0)
+  @Min(1)
   amount: number;
 
-  @IsString()
+  @IsEmail()
   @IsNotEmpty()
   bankEmail: string;
 }
