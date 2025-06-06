@@ -8,7 +8,7 @@ jest.mock('../../src/firebase', () => ({
 
 describe('WalletRepository', () => {
   let repository: WalletRepository;
-  let mockDb: { ref: any; };
+  let mockDb: { ref: any };
 
   beforeEach(() => {
     const get = jest.fn().mockResolvedValue({ val: () => 0 });
@@ -23,7 +23,7 @@ describe('WalletRepository', () => {
     };
 
     (admin.database as any) = jest.fn(() => mockDb);
-    
+
     repository = new WalletRepository();
   });
 
@@ -60,7 +60,7 @@ describe('WalletRepository', () => {
       const updates = { 'users/test-uid/balance': 100 };
       const updateFn = jest.fn().mockResolvedValue(undefined);
       mockDb.ref.mockReturnValue({ update: updateFn });
-      
+
       await repository.update(updates);
 
       expect(mockDb.ref).toHaveBeenCalledWith();
@@ -74,7 +74,7 @@ describe('WalletRepository', () => {
       const transactions = { tx1: { amount: 50 }, tx2: { amount: -20 } };
       const get = jest.fn().mockResolvedValue({ val: () => transactions });
       mockDb.ref.mockReturnValue({ get });
-      
+
       const result = await repository.getTransactions(uid);
 
       expect(result).toEqual(transactions);
@@ -85,10 +85,10 @@ describe('WalletRepository', () => {
       const uid = 'test-uid-no-tx';
       const get = jest.fn().mockResolvedValue({ val: () => null });
       mockDb.ref.mockReturnValue({ get });
-      
+
       const result = await repository.getTransactions(uid);
-      
+
       expect(result).toEqual({});
     });
   });
-}); 
+});

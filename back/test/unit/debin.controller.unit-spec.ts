@@ -50,4 +50,4 @@ describe('DebinController', () => {
       expect(result).toBe(expectedResult);
     });
   });
-}); 
+});

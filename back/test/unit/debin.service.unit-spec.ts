@@ -44,7 +44,9 @@ describe('DebinService', () => {
 
     service = module.get<DebinService>(DebinService);
     repo = module.get<WalletRepository>(WalletRepository);
-    debinBankClient = module.get<DebinBankClientService>(DebinBankClientService);
+    debinBankClient = module.get<DebinBankClientService>(
+      DebinBankClientService,
+    );
     jest.clearAllMocks();
   });
 
@@ -85,4 +87,4 @@ describe('DebinService', () => {
       });
     });
   });
-}); 
+});

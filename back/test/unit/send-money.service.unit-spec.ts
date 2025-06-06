@@ -46,9 +46,9 @@ describe('SendMoneyService', () => {
   describe('sendMoney', () => {
     it('should throw an error if sender has insufficient funds', async () => {
       mockWalletRepository.getBalance.mockResolvedValue(50);
-      await expect(service.sendMoney('sender', 'recipient', 100)).rejects.toThrow(
-        'Insufficient funds',
-      );
+      await expect(
+        service.sendMoney('sender', 'recipient', 100),
+      ).rejects.toThrow('Insufficient funds');
     });
 
     it('should correctly perform the money transfer', async () => {
@@ -80,9 +80,11 @@ describe('SendMoneyService', () => {
     });
 
     it('should return null if email is not found', async () => {
-      mockWalletRepository.getUserByEmail.mockRejectedValue(new Error('not found'));
+      mockWalletRepository.getUserByEmail.mockRejectedValue(
+        new Error('not found'),
+      );
       const result = await service.getIdFromEmail('test@test.com');
       expect(result).toBeNull();
     });
   });
-}); 
+});

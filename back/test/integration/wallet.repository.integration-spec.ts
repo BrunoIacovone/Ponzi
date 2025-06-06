@@ -71,4 +71,4 @@ describe('WalletRepository (Integration)', () => {
 
     await TestUtils.getDb().ref('users/some-other-path').set(null);
   });
-}); 
+});

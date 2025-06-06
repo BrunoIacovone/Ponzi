@@ -53,7 +53,9 @@ describe('BankService', () => {
     });
 
     it('should correctly perform the bank transfer', async () => {
-      mockWalletRepository.getUserByEmail.mockResolvedValue({ uid: 'test-uid' });
+      mockWalletRepository.getUserByEmail.mockResolvedValue({
+        uid: 'test-uid',
+      });
       mockWalletRepository.pushKey.mockResolvedValue('tx123');
       mockWalletRepository.getBalance.mockResolvedValue(1100);
 
@@ -71,4 +73,4 @@ describe('BankService', () => {
       });
     });
   });
-}); 
+});

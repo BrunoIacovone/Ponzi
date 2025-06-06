@@ -14,7 +14,6 @@ jest.mock('@nestjs/common', () => ({
   })),
 }));
 
-
 describe('FirebaseExceptionFilter', () => {
   let filter: FirebaseExceptionFilter;
   let mockArgumentsHost: ArgumentsHost;
@@ -41,9 +40,9 @@ describe('FirebaseExceptionFilter', () => {
 
   it('should handle HttpException correctly', () => {
     const exception = new HttpException('Test error', HttpStatus.BAD_REQUEST);
-    
+
     filter.catch(exception, mockArgumentsHost);
-    
+
     expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
     expect(mockResponse.json).toHaveBeenCalledWith(exception.getResponse());
   });
@@ -53,9 +52,9 @@ describe('FirebaseExceptionFilter', () => {
       code: 'auth/invalid-token',
       message: 'The token is invalid.',
     };
-    
+
     filter.catch(exception, mockArgumentsHost);
-    
+
     expect(mockResponse.status).toHaveBeenCalledWith(401);
     expect(mockResponse.json).toHaveBeenCalledWith({
       statusCode: 401,
@@ -67,21 +66,27 @@ describe('FirebaseExceptionFilter', () => {
 
   it('should handle unhandled errors as InternalServerErrorException', () => {
     const exception = new Error('Some unexpected error');
-    
+
     filter.catch(exception, mockArgumentsHost);
 
-    const expectedError = new InternalServerErrorException('Some unexpected error');
-    expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+    const expectedError = new InternalServerErrorException(
+      'Some unexpected error',
+    );
+    expect(mockResponse.status).toHaveBeenCalledWith(
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
     expect(mockResponse.json).toHaveBeenCalledWith(expectedError.getResponse());
   });
 
   it('should handle unhandled non-Error objects', () => {
     const exception = { some: 'object' };
-    
+
     filter.catch(exception, mockArgumentsHost);
 
     const expectedError = new InternalServerErrorException('Unexpected error');
-    expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(mockResponse.status).toHaveBeenCalledWith(
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
     expect(mockResponse.json).toHaveBeenCalledWith(expectedError.getResponse());
   });
-}); 
+});

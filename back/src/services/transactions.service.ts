@@ -10,14 +10,14 @@ export class TransactionsService {
 
     const txsWithDetails = await Promise.all(
       entries.map(async ([id, tx]: [string, any]) => {
-        let userNameOrEmail = tx.user;
-        if (tx.user !== 'system') {
+        let userName = tx.user;
+        if (tx.user !== 'DEBIN' && tx.user !== 'Bank Transfer') {
           try {
             const user = await this.repo.getUserById(tx.user);
-            userNameOrEmail = user.displayName || user.email || tx.user;
+            userName = user.displayName || user.email || tx.user;
           } catch {}
         }
-        return { id, ...tx, user: userNameOrEmail };
+        return { id, ...tx, userName: userName };
       }),
     );
 

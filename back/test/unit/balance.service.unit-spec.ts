@@ -41,4 +41,4 @@ describe('BalanceService', () => {
       expect(result).toBe(expectedBalance);
     });
   });
-}); 
+});

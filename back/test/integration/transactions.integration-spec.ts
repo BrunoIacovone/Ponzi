@@ -58,7 +58,7 @@ describe('/api/transactions (integration)', () => {
         expect(res.body[0].amount).toBe(50);
         expect(res.body[1].id).toBe('tx1');
         expect(res.body[1].amount).toBe(10);
-        expect(res.body[1].user).toBe(otherUser.email);
+        expect(res.body[1].userName).toBe(otherUser.email);
       });
   }, 30000);
 });

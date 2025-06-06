@@ -56,7 +56,9 @@ describe('Home Banking flow (e2e)', () => {
       .expect(500)
       .expect((res) => {
         expect(res.body.success).toBe(false);
-        expect(res.body.message).toContain('User with email non-existent-user@test.com not found');
+        expect(res.body.message).toContain(
+          'User with email non-existent-user@test.com not found',
+        );
       });
   });
 });

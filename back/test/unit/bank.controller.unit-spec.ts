@@ -48,4 +48,4 @@ describe('BankController', () => {
       expect(result).toBe(expectedResult);
     });
   });
-}); 
+});

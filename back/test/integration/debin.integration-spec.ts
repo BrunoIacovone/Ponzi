@@ -25,7 +25,7 @@ describe('/api/debin (integration)', () => {
     const initialBalance = await TestUtils.getBalance(user.uid);
     expect(initialBalance).toBe(0);
     const dto: DebinDto = { bankEmail: 'user@bank.com', amount: 350 };
-    
+
     await request(app.getHttpServer())
       .post('/api/debin')
       .set('Authorization', `Bearer ${user.token}`)
@@ -43,4 +43,4 @@ describe('/api/debin (integration)', () => {
     expect(txs[txId].amount).toBe(350);
     expect(txs[txId].user).toBe('DEBIN');
   });
-}); 
+});

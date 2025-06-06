@@ -4,4 +4,4 @@ export class InsufficientFundsException extends BadRequestException {
   constructor() {
     super('Insufficient funds', 'INSUFFICIENT_FUNDS');
   }
-} 
+}

@@ -43,7 +43,7 @@ describe('FirebaseAuthGuard', () => {
       .fn()
       .mockRejectedValue(new Error('Invalid token'));
     (admin.auth as any).mockReturnValue({ verifyIdToken });
-    
+
     await expect(guard.canActivate(mockContext)).rejects.toThrow(
       UnauthorizedException,
     );
@@ -54,7 +54,7 @@ describe('FirebaseAuthGuard', () => {
     const token = 'valid-token';
     const decodedToken = { uid: 'test-uid', email: 'test@test.com' };
     mockRequest.headers['authorization'] = `Bearer ${token}`;
-    
+
     const verifyIdToken = jest.fn().mockResolvedValue(decodedToken);
     (admin.auth as any).mockReturnValue({ verifyIdToken });
 
@@ -64,4 +64,4 @@ describe('FirebaseAuthGuard', () => {
     expect(mockRequest.user).toBe(decodedToken);
     expect(verifyIdToken).toHaveBeenCalledWith(token);
   });
-}); 
+});

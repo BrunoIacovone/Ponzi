@@ -34,30 +34,30 @@ describe('DTOs validation', () => {
 
   describe('DebinDto', () => {
     it('should pass validation with correct data', async () => {
-        const dto = new DebinDto();
-        dto.bankEmail = 'test@bank.com';
-        dto.amount = 100;
-        const errors = await validate(dto);
-        expect(errors.length).toBe(0);
-      });
-  
-      it('should fail validation if bankEmail is not an email', async () => {
-        const dto = new DebinDto();
-        dto.bankEmail = 'not-an-email';
-        dto.amount = 100;
-        const errors = await validate(dto);
-        expect(errors.length).toBe(1);
-        expect(errors[0].property).toBe('bankEmail');
-      });
-  
-      it('should fail validation if amount is not a positive number', async () => {
-        const dto = new DebinDto();
-        dto.bankEmail = 'test@bank.com';
-        dto.amount = 0;
-        const errors = await validate(dto);
-        expect(errors.length).toBe(1);
-        expect(errors[0].property).toBe('amount');
-      });
+      const dto = new DebinDto();
+      dto.bankEmail = 'test@bank.com';
+      dto.amount = 100;
+      const errors = await validate(dto);
+      expect(errors.length).toBe(0);
+    });
+
+    it('should fail validation if bankEmail is not an email', async () => {
+      const dto = new DebinDto();
+      dto.bankEmail = 'not-an-email';
+      dto.amount = 100;
+      const errors = await validate(dto);
+      expect(errors.length).toBe(1);
+      expect(errors[0].property).toBe('bankEmail');
+    });
+
+    it('should fail validation if amount is not a positive number', async () => {
+      const dto = new DebinDto();
+      dto.bankEmail = 'test@bank.com';
+      dto.amount = 0;
+      const errors = await validate(dto);
+      expect(errors.length).toBe(1);
+      expect(errors[0].property).toBe('amount');
+    });
   });
 
   describe('SendMoneyDto', () => {
@@ -70,21 +70,21 @@ describe('DTOs validation', () => {
     });
 
     it('should fail if recipientMail is not an email', async () => {
-        const dto = new SendMoneyDto();
-        dto.recipientMail = 'not-an-email';
-        dto.amount = 50;
-        const errors = await validate(dto);
-        expect(errors.length).toBe(1);
-        expect(errors[0].property).toBe('recipientMail');
+      const dto = new SendMoneyDto();
+      dto.recipientMail = 'not-an-email';
+      dto.amount = 50;
+      const errors = await validate(dto);
+      expect(errors.length).toBe(1);
+      expect(errors[0].property).toBe('recipientMail');
     });
 
     it('should fail if amount is not positive', async () => {
-        const dto = new SendMoneyDto();
-        dto.recipientMail = 'recipient@example.com';
-        dto.amount = 0;
-        const errors = await validate(dto);
-        expect(errors.length).toBe(1);
-        expect(errors[0].property).toBe('amount');
-      });
+      const dto = new SendMoneyDto();
+      dto.recipientMail = 'recipient@example.com';
+      dto.amount = 0;
+      const errors = await validate(dto);
+      expect(errors.length).toBe(1);
+      expect(errors[0].property).toBe('amount');
+    });
   });
-}); 
+});

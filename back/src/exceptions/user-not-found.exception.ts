@@ -4,4 +4,4 @@ export class UserNotFoundException extends NotFoundException {
   constructor(email?: string) {
     super(`User with email ${email} not found`, 'USER_NOT_FOUND');
   }
-} 
+}

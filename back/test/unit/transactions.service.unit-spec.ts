@@ -59,18 +59,20 @@ describe('TransactionsService', () => {
         {
           id: 'tx2',
           direction: 'received',
-          user: 'user3-name',
+          user: 'user3',
+          userName: 'user3-name',
           amount: 20,
           timestamp: 2,
         },
         {
           id: 'tx1',
           direction: 'sent',
-          user: 'user2-name',
+          user: 'user2',
+          userName: 'user2-name',
           amount: 10,
           timestamp: 1,
         },
       ]);
     });
   });
-}); 
+});

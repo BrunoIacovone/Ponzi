@@ -32,7 +32,9 @@ describe('/api/send-money (integration)', () => {
       .send({ recipientMail: 'invalid-email@test.com', amount: 50 })
       .expect(400)
       .expect((res) => {
-        expect(res.body.message).toContain('Recipient mail is invalid: invalid-email@test.com');
+        expect(res.body.message).toContain(
+          'Recipient mail is invalid: invalid-email@test.com',
+        );
         expect(res.body.error).toBe('INVALID_RECIPIENT');
       });
   });
@@ -56,7 +58,7 @@ describe('/api/send-money (integration)', () => {
       .post('/api/send-money')
       .set('Authorization', `Bearer ${sender.token}`)
       .send({ recipientMail: recipient.email, amount: 50 })
-      .expect(400) 
+      .expect(400)
       .expect((res) => {
         expect(res.body.message).toContain('Insufficient funds');
         expect(res.body.error).toBe('INSUFFICIENT_FUNDS');

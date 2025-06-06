@@ -4,7 +4,10 @@ import { AppModule } from '../src/app.module';
 import admin from '../src/firebase';
 import { FirebaseApp, deleteApp, getApps, initializeApp } from 'firebase/app';
 import { getAuth, signInWithCustomToken } from 'firebase/auth';
-import { deleteApp as deleteAdminApp, getApps as getAdminApps } from 'firebase-admin/app';
+import {
+  deleteApp as deleteAdminApp,
+  getApps as getAdminApps,
+} from 'firebase-admin/app';
 
 export class TestUtils {
   static app: INestApplication;
@@ -77,7 +80,7 @@ export class TestUtils {
     if (this.firebaseApp) {
       await deleteApp(this.firebaseApp);
     }
-    
+
     if (this.createdUserUIDs.length > 0) {
       await admin.auth().deleteUsers(this.createdUserUIDs);
       const updates = {};
@@ -87,7 +90,7 @@ export class TestUtils {
       await this.getDb().ref().update(updates);
       this.createdUserUIDs = [];
     }
-    
+
     await Promise.all(getAdminApps().map(deleteAdminApp));
   }
 }
