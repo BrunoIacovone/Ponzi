@@ -1,12 +1,13 @@
 import request from 'supertest';
 import { TestUtils } from '../test-utils';
-import { BankDto } from 'src/dto/bank.dto';
 
-describe('/api/bank (integration)', () => {
+describe('Home Banking flow (e2e)', () => {
   let user: { uid: string; token: string; email: string };
+  const bankApi = request('http://localhost:3005');
 
   beforeAll(async () => {
     await TestUtils.initializeApp();
+    await TestUtils.app.listen(3000);
     user = await TestUtils.createTestUser();
   });
 
@@ -18,16 +19,19 @@ describe('/api/bank (integration)', () => {
     await TestUtils.getDb().ref(`users/${user.uid}`).set(null);
   });
 
-  it('should add funds to the user account', async () => {
+  it('should add funds to the user account via the external homeBanking API', async () => {
     const initialBalance = await TestUtils.getBalance(user.uid);
     expect(initialBalance).toBe(0);
-    const dto: BankDto = { bankEmail: user.email, amount: 250 };
+    const payload = { emailWallet: user.email, amount: 250 };
 
-    await request(TestUtils.app.getHttpServer())
-      .post('/api/bank')
-      .send(dto)
-      .expect(201);
-    
+    await bankApi
+      .post('/homeBanking/transfer')
+      .send(payload)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.success).toBe(true);
+      });
+
     const finalBalance = await TestUtils.getBalance(user.uid);
     expect(finalBalance).toBe(250);
 
@@ -40,19 +44,19 @@ describe('/api/bank (integration)', () => {
     expect(txs[txId].user).toBe('Bank Transfer');
   });
 
-  it('should throw an error for a non-existent user email', async () => {
-    const dto: BankDto = {
-      bankEmail: 'non-existent-user@test.com',
+  it('should return an error for a non-existent user email', async () => {
+    const payload = {
+      emailWallet: 'non-existent-user@test.com',
       amount: 100,
     };
 
-    return request(TestUtils.app.getHttpServer())
-      .post('/api/bank')
-      .send(dto)
-      .expect(404) 
+    return bankApi
+      .post('/homeBanking/transfer')
+      .send(payload)
+      .expect(500)
       .expect((res) => {
+        expect(res.body.success).toBe(false);
         expect(res.body.message).toContain('User with email non-existent-user@test.com not found');
-        expect(res.body.error).toBe('USER_NOT_FOUND');
       });
   });
 });
