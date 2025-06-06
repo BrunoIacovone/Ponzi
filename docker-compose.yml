@@ -5,20 +5,31 @@ services:
     build:
       context: ./back
       dockerfile: DockerFile
+    restart: unless-stopped
     ports:
       - "3000:3000"
+    env_file:
+      - ./back/.env
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=firebase-service-account.json
-    volumes:
-      - ./back:/back
-    restart: unless-stopped
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/firebase-service-account.json
+      - BANK_API_URL=http://bank-api:3005
+    depends_on:
+      - bank-api
 
   frontend:
     build:
       context: ./front
       dockerfile: DockerFile
+    restart: unless-stopped
     ports:
       - "5173:5173"
-    volumes:
-      - ./front:/front
+    depends_on:
+      - backend
+
+  bank-api:
+    build:
+      context: ./bank-api
+      dockerfile: Dockerfile
     restart: unless-stopped
+    ports:
+      - "3005:3005" 
