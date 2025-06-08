@@ -31,8 +31,8 @@ jobs:
 
       - name: Debug files
         run: |
-           echo "Current directory: $(pwd)"
-           ls -R
+          echo "Current directory: $(pwd)"
+          ls -R
    
 
       - name: Create firebase-service-account.json
