@@ -1,6 +1,8 @@
 .idea/
 .vscode/
 
+**/screenshots/
+**/venv/
 **/node_modules/
 **/dist/
 **/.env
