@@ -15,7 +15,7 @@ jobs:
 
     env:
       GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/back/firebase-service-account.json
-      
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -32,7 +32,7 @@ jobs:
 
       - name: Create firebase-service-account.json
         run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > back/firebase-service-account.json
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'| sed 's/\\n/\n/g' > back/firebase-service-account.json
 
       - name: Run back
         run: npm run start &
