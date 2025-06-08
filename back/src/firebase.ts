@@ -13,12 +13,11 @@ if (process.env.NODE_ENV === 'test') {
     databaseURL: process.env.FIREBASE_DATABASE_URL_EMULATOR,
   });
 } else {
-  const serviceAccountPath = path.join(__dirname, 'firebase-service-account.json');
+  const serviceAccountPath = path.resolve(process.cwd(), 'back/firebase-service-account.json');
 
   if (!fs.existsSync(serviceAccountPath)) {
     throw new Error(
-      `Firebase service account JSON not found at ${serviceAccountPath}. ` +
-      `Make sure it exists locally or is created by the CI before running.`
+      `Firebase service account JSON not found at ${serviceAccountPath}.`
     );
   }
 
