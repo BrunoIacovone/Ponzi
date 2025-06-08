@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'test') {
     databaseURL: process.env.FIREBASE_DATABASE_URL_EMULATOR,
   });
 } else {
-  const serviceAccountPath = path.resolve(__dirname, '../firebase-service-account.json');
+  const serviceAccountPath = path.join(__dirname, 'firebase-service-account.json');
 
   if (!fs.existsSync(serviceAccountPath)) {
     throw new Error(
