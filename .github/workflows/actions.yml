@@ -29,6 +29,12 @@ jobs:
           cd back
           npm install
 
+      - name: Debug files
+        run: |
+           echo "Current directory: $(pwd)"
+           ls -R
+   
+
       - name: Create firebase-service-account.json
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > back/firebase-service-account.json
