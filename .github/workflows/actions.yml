@@ -12,9 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/back/firebase-service-account.json
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -28,15 +25,6 @@ jobs:
         run: |
           cd back
           npm install
-
-      - name: Debug files
-        run: |
-          cd back
-          echo "Current directory: $(pwd)"
-          ls -R
-   
-      - name: List files
-        run: ls -la back
 
       - name: Create firebase-service-account.json
         run: |
