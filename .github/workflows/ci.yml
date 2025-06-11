@@ -38,31 +38,45 @@ jobs:
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > back/firebase-service-account.json
 
-      - name: Build the server
+      - name: Build backend
         run: npm run build
         working-directory: back
 
-      - name: Run back
-        run: npm run start &
+      - name: Start backend in background
+        run: npm run start > ../back.log 2>&1 &
         working-directory: back
 
-      - name: Install dependencies
-        run: |
-          cd front
-          npm install
+      - name: Wait for backend
+        run: npx wait-on http://localhost:3000
 
-      - name: Run build
+      - name: Install frontend dependencies
+        run: npm install
+        working-directory: front
+
+      - name: Build frontend
         run: npm run build
         working-directory: front
 
-      - name: Run front
-        run: npm run dev &
+      - name: Start frontend in background
+        run: npm run dev > ../front.log 2>&1 &
         working-directory: front
+
+      - name: Wait for frontend
+        run: npx wait-on http://localhost:5173
 
       - name: Check code format with Prettier
         run: npm run format:check
         working-directory: front
 
-      - name: Run cypress tests
+      - name: Run Cypress tests
         run: npx cypress run
         working-directory: front
+
+      - name: Output backend & frontend logs on failure
+        if: failure()
+        run: |
+          echo "========= BACKEND LOG ========="
+          cat back.log || echo "No backend log found"
+
+          echo "========= FRONTEND LOG ========="
+          cat front.log || echo "No frontend log found"
