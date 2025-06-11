@@ -43,11 +43,8 @@ jobs:
         working-directory: back
 
       - name: Start backend in background
-        run: npm run start > ../back.log 2>&1 &
+        run: npm run start &
         working-directory: back
-
-      - name: Wait for backend
-        run: npx wait-on http://localhost:3000
 
       - name: Install frontend dependencies
         run: npm install
@@ -58,11 +55,8 @@ jobs:
         working-directory: front
 
       - name: Start frontend in background
-        run: npm run dev > ../front.log 2>&1 &
+        run: npm run dev &
         working-directory: front
-
-      - name: Wait for frontend
-        run: npx wait-on http://localhost:5173
 
       - name: Check code format with Prettier
         run: npm run format:check
@@ -71,12 +65,3 @@ jobs:
       - name: Run Cypress tests
         run: npx cypress run
         working-directory: front
-
-      - name: Output backend & frontend logs on failure
-        if: failure()
-        run: |
-          echo "========= BACKEND LOG ========="
-          cat back.log || echo "No backend log found"
-
-          echo "========= FRONTEND LOG ========="
-          cat front.log || echo "No frontend log found"
