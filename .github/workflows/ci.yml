@@ -34,6 +34,10 @@ jobs:
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > back/firebase-service-account.json
 
+      - name: Build the server
+        run: npm run build
+        working-directory: back
+
       - name: Run back
         run: npm run start &
         working-directory: back
