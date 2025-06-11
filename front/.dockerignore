@@ -1,0 +1,8 @@
+# Ignora dependencias locales, builds y archivos de git
+node_modules
+dist
+.git
+.gitignore
+Dockerfile
+README.md
+cypress 

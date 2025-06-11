@@ -1,0 +1,6 @@
+# Ignora dependencias locales y archivos de git
+node_modules
+.git
+.gitignore
+Dockerfile
+README.md 

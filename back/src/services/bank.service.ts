@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import admin from '../firebase';
 import { WalletRepository } from '../repositories/wallet.repository';
+import { UserNotFoundException } from 'src/exceptions/user-not-found.exception';
 
 @Injectable()
 export class BankService {
@@ -10,7 +11,8 @@ export class BankService {
     try {
       const txId = await this.repo.pushKey();
       const now = Date.now();
-      const uid = (await this.repo.getUserByEmail(bankEmail)).uid;
+      const user = await this.repo.getUserByEmail(bankEmail);
+      const uid = user.uid;
 
       const updates: any = {
         [`users/${uid}/balance`]: admin.database.ServerValue.increment(amount),
@@ -31,7 +33,10 @@ export class BankService {
         transaction: { txId, amount, timestamp: now },
       };
     } catch (error) {
-      throw new Error(error.message);
+      if (error.code === 'auth/user-not-found') {
+        throw new UserNotFoundException(bankEmail);
+      }
+      throw error;
     }
   }
 }

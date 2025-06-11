@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Transaction } from '../../api/wallet';
 import { TransactionType } from './Filters';
-import { auth } from '../../auth/firebase';
-import { FirebaseRealtimeWatcher } from '../../watcher/FirebaseRealtimeWatcher';
+import { useGetTransactions } from '../../hooks/useWallet';
 
 interface TransactionListProps {
   type: TransactionType;
@@ -15,33 +14,21 @@ export default function TransactionList({
   fromDate,
   toDate,
 }: TransactionListProps) {
+  const { getTransactions, loading, error } = useGetTransactions();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<
     Transaction[]
   >([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) {
-      setError('User not authenticated');
-      setLoading(false);
-      return;
-    }
-    const watcher = new FirebaseRealtimeWatcher();
-    watcher.watch<Record<string, Transaction>>(
-      `users/${user.uid}/transactions`,
-      (val) => {
-        const txList = val ? Object.values(val) : [];
-        txList.reverse();
-        setTransactions(txList);
-        setLoading(false);
-        //ver como hacer para displayear el transaction.
-      },
-    );
-    return () => watcher.clearAll();
-  }, []);
+    const fetch = async () => {
+      const t = await getTransactions();
+      if (t) {
+        setTransactions(t);
+      }
+    };
+    fetch();
+  }, [getTransactions]);
 
   useEffect(() => {
     let filtered = transactions;
@@ -92,7 +79,8 @@ export default function TransactionList({
   );
 }
 
-function IncomeComponent(from: String, amount: number, timestamp: number) {
+function IncomeComponent(from: string, amount: number, timestamp: number) {
+  const fromText = `From ${from}`;
   return (
     <div
       style={{
@@ -104,7 +92,7 @@ function IncomeComponent(from: String, amount: number, timestamp: number) {
     >
       <div style={{ color: 'green' }}>
         + ${amount}{' '}
-        <span style={{ color: '#888', fontSize: 12 }}>From {from}</span>
+        <span style={{ color: '#888', fontSize: 12 }}>{fromText}</span>
       </div>
       <div style={{ fontSize: 12, color: '#888' }}>
         {formatDate(new Date(timestamp))}
@@ -115,7 +103,14 @@ function IncomeComponent(from: String, amount: number, timestamp: number) {
 
 function ExpenseComponent(to: String, amount: number, timestamp: number) {
   return (
-    <div style={{ background: '#f6f6f6', padding: 12, borderRadius: 8 }}>
+    <div
+      style={{
+        background: '#f6f6f6',
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 8,
+      }}
+    >
       <div style={{ color: 'red' }}>
         - ${amount} <span style={{ color: '#888', fontSize: 12 }}>To {to}</span>
       </div>

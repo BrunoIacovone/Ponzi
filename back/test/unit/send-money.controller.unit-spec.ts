@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SendMoneyController } from '../src/controller/send-money.controller';
-import { SendMoneyService } from '../src/services/send-money.service';
+import { SendMoneyController } from 'src/controller/send-money.controller';
+import { SendMoneyService } from 'src/services/send-money.service';
 import { BadRequestException } from '@nestjs/common';
-import { SendMoneyDto } from '../src/dto/send-money.dto';
+import { SendMoneyDto } from 'src/dto/send-money.dto';
 
 describe('SendMoneyController', () => {
   let controller: SendMoneyController;

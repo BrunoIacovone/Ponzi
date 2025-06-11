@@ -1,0 +1,9 @@
+# Ignora dependencias locales, builds y archivos de git
+node_modules
+.git
+.gitignore
+Dockerfile
+README.md
+test
+firebase-emulator-data
+database-debug.log 
