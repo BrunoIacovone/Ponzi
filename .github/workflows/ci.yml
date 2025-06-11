@@ -52,7 +52,7 @@ jobs:
           npm install
 
       - name: Run back
-        run: node app.js
+        run: node app.js &
         working-directory: bank-api
 
       - name: Install dependencies
