@@ -46,6 +46,15 @@ jobs:
         run: npm run start &
         working-directory: back
 
+      - name: Install api dependencies
+        run: |
+          cd bank-api
+          npm install
+
+      - name: Run back
+        run: node app.js
+        working-directory: bank-api
+
       - name: Install dependencies
         run: |
           cd front
