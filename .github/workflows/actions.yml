@@ -16,6 +16,7 @@ jobs:
       GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/back/firebase-service-account.json
       FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
       FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+      FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
 
     steps:
       - name: Checkout repository
