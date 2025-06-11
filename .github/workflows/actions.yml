@@ -40,6 +40,15 @@ jobs:
         run: npm run build
         working-directory: back
 
+      - name: Install api dependencies
+        run: |
+          cd bank-api
+          npm install
+
+      - name: Run api
+        run: node app.js &
+        working-directory: bank-api
+
       - name: Check formatting
         run: npm run format:check
         working-directory: back

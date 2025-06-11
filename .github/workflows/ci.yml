@@ -60,6 +60,15 @@ jobs:
         run: npm run dev &
         working-directory: front
 
+      - name: Install api dependencies
+        run: |
+          cd bank-api
+          npm install
+
+      - name: Run back
+        run: node app.js &
+        working-directory: bank-api
+
       - name: Check code format with Prettier
         run: npm run format:check
         working-directory: front
