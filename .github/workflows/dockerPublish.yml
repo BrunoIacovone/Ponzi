@@ -2,8 +2,8 @@ name: Continuous Deployment
 
 on:
   workflow_run:
-    workflows: ["Continuous Integration"]
-    branches: [main]
+    workflows: ["CI - Back" ,"CI - Front"]
+    branches: [main , cd]
     types:
       - completed
 
