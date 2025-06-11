@@ -4,7 +4,7 @@ services:
   backend:
     build:
       context: ./back
-      dockerfile: DockerFile
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -19,7 +19,7 @@ services:
   frontend:
     build:
       context: ./front
-      dockerfile: DockerFile
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "5173:5173"
