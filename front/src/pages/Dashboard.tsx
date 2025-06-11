@@ -14,7 +14,6 @@ export default function Dashboard() {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      localStorage.removeItem('token');
       navigate('/login');
     } catch (error) {
       console.error('Error signing out: ', error);
@@ -32,6 +31,7 @@ export default function Dashboard() {
   return (
     <div style={{ maxWidth: 480, margin: '0 auto', padding: 16 }}>
       <button
+        name="logout"
         onClick={handleLogout}
         style={{
           marginTop: 16,

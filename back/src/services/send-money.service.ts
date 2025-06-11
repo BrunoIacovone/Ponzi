@@ -1,30 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { WalletRepository } from '../repositories/wallet.repository';
 import admin from '../firebase';
+import { InsufficientFundsException } from 'src/exceptions/insufficient-funds.exception';
 
 @Injectable()
 export class SendMoneyService {
   constructor(private repo: WalletRepository) {}
   async sendMoney(senderUid: string, recipientUid: string, amount: number) {
     const senderBalance = await this.repo.getBalance(senderUid);
-    if (senderBalance < amount) throw new Error('Insufficient funds');
+    if (senderBalance < amount) throw new InsufficientFundsException();
 
     const now = Date.now();
     const txId = await this.repo.pushKey();
 
-    let senderNameOrEmail = senderUid;
-    try {
-      const senderUser = await this.repo.getUserById(senderUid);
-      senderNameOrEmail =
-        senderUser.displayName || senderUser.email || senderUid;
-    } catch {}
+    const senderUser = await this.repo.getUserById(senderUid);
+    const senderNameOrEmail =
+      senderUser.displayName || senderUser.email || senderUid;
 
-    let recipientNameOrEmail = recipientUid;
-    try {
-      const recipientUser = await this.repo.getUserById(recipientUid);
-      recipientNameOrEmail =
-        recipientUser.displayName || recipientUser.email || recipientUid;
-    } catch {}
+    const recipientUser = await this.repo.getUserById(recipientUid);
+    const recipientNameOrEmail =
+      recipientUser.displayName || recipientUser.email || recipientUid;
 
     const updates: any = {
       [`transfers/${txId}`]: {
