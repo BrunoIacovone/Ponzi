@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npx cap sync",
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "android": "npx cap run android"
   },
   "dependencies": {
     "@capacitor/android": "^7.2.0",
@@ -28,6 +29,14 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
+    "@wdio/appium-service": "^9.15.0",
+    "@wdio/cli": "^9.15.0",
+    "@wdio/local-runner": "^9.15.0",
+    "@wdio/mocha-framework": "^9.15.0",
+    "@wdio/spec-reporter": "^9.15.0",
+    "@wdio/visual-service": "^8.0.4",
+    "appium": "^2.19.0",
+    "appium-uiautomator2-driver": "^4.2.3",
     "cypress": "^14.4.0",
     "cypress-dotenv": "^3.0.1",
     "eslint": "^9.22.0",
@@ -37,6 +46,7 @@
     "prettier": "^3.5.3",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
-    "vite": "^6.3.1"
+    "vite": "^6.3.1",
+    "webdriverio": "^9.15.0"
   }
 }
