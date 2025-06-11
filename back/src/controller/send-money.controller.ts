@@ -9,6 +9,8 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { CannotSendToSelfException } from 'src/exceptions/cannot-send-to-self.exception';
+import { InvalidRecipientException } from 'src/exceptions/invalid-recipient.exception';
 import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { SendMoneyDto } from '../dto/send-money.dto';
 import { SendMoneyService } from '../services/send-money.service';
@@ -28,11 +30,11 @@ export class SendMoneyController {
     const { recipientMail, amount } = body;
     const recipientUid = await this.service.getIdFromEmail(recipientMail);
     if (!recipientUid) {
-      throw new BadRequestException('Recipient mail is invalid');
+      throw new InvalidRecipientException(recipientMail);
     }
     const senderUid = req.user.uid;
     if (recipientUid === senderUid) {
-      throw new BadRequestException('Cannot send money to yourself');
+      throw new CannotSendToSelfException();
     }
     return await this.service.sendMoney(req.user.uid, recipientUid, amount);
   }

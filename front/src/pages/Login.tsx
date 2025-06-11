@@ -15,13 +15,8 @@ export default function Login() {
     setLoading(true);
     setError('');
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      const token = await userCredential.user.getIdToken();
-      localStorage.setItem('token', token);
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate('/');
     } catch (err: any) {
       setError(err.message);
     } finally {
