@@ -13,18 +13,22 @@ if (process.env.NODE_ENV === 'test') {
     databaseURL: process.env.FIREBASE_DATABASE_URL_EMULATOR,
   });
 } else {
-const serviceAccountPath = path.resolve(__dirname, '../firebase-service-account.json');
+  const serviceAccountPath = path.resolve(
+    __dirname,
+    '../firebase-service-account.json',
+  );
 
-console.log('[FIREBASE] Looking for credentials at:', serviceAccountPath);
-
+  console.log('[FIREBASE] Looking for credentials at:', serviceAccountPath);
 
   if (!fs.existsSync(serviceAccountPath)) {
     throw new Error(
-      `Firebase service account JSON not found at ${serviceAccountPath}.`
+      `Firebase service account JSON not found at ${serviceAccountPath}.`,
     );
   }
 
-  const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+  const serviceAccount = JSON.parse(
+    fs.readFileSync(serviceAccountPath, 'utf8'),
+  );
 
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
