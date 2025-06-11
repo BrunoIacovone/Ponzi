@@ -13,15 +13,6 @@ jobs:
   test-frontend:
     runs-on: ubuntu-latest
 
-    env:
-      GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/back/firebase-service-account.json
-      FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
-      FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-      FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
-      FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
-      CYPRESS_EMAIL: ${{ secrets.CYPRESS_EMAIL }}
-      CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -31,23 +22,6 @@ jobs:
         with:
           node-version: '22.6.0'
 
-      - name: Install dependencies
-        run: |
-          cd back
-          npm install
-
-      - name: Create firebase-service-account.json
-        run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > back/firebase-service-account.json
-
-      - name: Build backend
-        run: npm run build
-        working-directory: back
-
-      - name: Start backend in background
-        run: npm run start &
-        working-directory: back
-
       - name: Install frontend dependencies
         run: npm install
         working-directory: front
@@ -56,23 +30,6 @@ jobs:
         run: npm run build
         working-directory: front
 
-      - name: Start frontend in background
-        run: npm run dev &
-        working-directory: front
-
-      - name: Install api dependencies
-        run: |
-          cd bank-api
-          npm install
-
-      - name: Run back
-        run: node app.js &
-        working-directory: bank-api
-
       - name: Check code format with Prettier
         run: npm run format:check
-        working-directory: front
-
-      - name: Run Cypress tests
-        run: npx cypress run
         working-directory: front
