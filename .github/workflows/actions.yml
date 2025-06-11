@@ -12,6 +12,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env: 
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/back/firebase-service-account.json
+      FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+      FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+      FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+      FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -34,6 +41,19 @@ jobs:
         run: npm run build
         working-directory: back
 
+      - name: Install api dependencies
+        run: |
+          cd bank-api
+          npm install
+
+      - name: Run api
+        run: node app.js &
+        working-directory: bank-api
+
       - name: Check formatting
         run: npm run format:check
+        working-directory: back
+
+      - name: Run tests
+        run: npm run test
         working-directory: back
