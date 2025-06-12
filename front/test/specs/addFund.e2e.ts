@@ -34,7 +34,9 @@ describe('Add Funds Page', () => {
     await $('input[placeholder="Bank Email"]').setValue('mark@mail.com');
     await $('button[type="submit"]').click();
 
-    const error = await $('//*[contains(text(), "Amount must be greater than 0")]');
+    const error = await $(
+      '//*[contains(text(), "Amount must be greater than 0")]',
+    );
     await error.waitForDisplayed({ timeout: 5000 });
     expect(error).toBeDisplayed();
     await $('//button[contains(text(), "Go back to Dashboard")]').click();

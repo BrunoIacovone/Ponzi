@@ -33,7 +33,9 @@ describe('Send Money Page', () => {
     await $('input[type="email"]').setValue('valid@mail.com');
     await $('button[type="submit"]').click();
 
-    const error = await $('//*[contains(text(), "amount must not be less than 1")]');
+    const error = await $(
+      '//*[contains(text(), "amount must not be less than 1")]',
+    );
     await error.waitForDisplayed({ timeout: 5000 });
     expect(error).toBeDisplayed();
     await $('//button[contains(text(), "Go back to Dashboard")]').click();
@@ -44,7 +46,9 @@ describe('Send Money Page', () => {
     await $('input[type="email"]').setValue(process.env.CYPRESS_EMAIL!);
     await $('button[type="submit"]').click();
 
-    const error = await $('//*[contains(text(), "Cannot send money to yourself")]');
+    const error = await $(
+      '//*[contains(text(), "Cannot send money to yourself")]',
+    );
     await error.waitForDisplayed({ timeout: 5000 });
     expect(error).toBeDisplayed();
     await $('//button[contains(text(), "Go back to Dashboard")]').click();

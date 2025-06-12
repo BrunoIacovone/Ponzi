@@ -40,7 +40,7 @@ describe('Send Money Page', () => {
 
   it('should not allow sending more money than the current balance', () => {
     cy.visit('/');
-    cy.wait(1000); 
+    cy.wait(1000);
     cy.get('[data-cy=balance-display]')
       .invoke('text')
       .then((text) => {

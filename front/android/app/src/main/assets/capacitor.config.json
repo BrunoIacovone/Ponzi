@@ -1,5 +1,5 @@
 {
-	"appId": "com.example.ponzi",
-	"appName": "front",
-	"webDir": "dist"
+  "appId": "com.example.ponzi",
+  "appName": "front",
+  "webDir": "dist"
 }
