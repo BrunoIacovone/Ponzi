@@ -22,6 +22,7 @@ export default function Filters({
   return (
     <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
       <select
+        data-cy="filter-transaction-type"
         value={type}
         onChange={(e) => onTypeChange(e.target.value as TransactionType)}
       >

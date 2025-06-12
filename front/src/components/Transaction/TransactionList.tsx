@@ -55,26 +55,30 @@ export default function TransactionList({
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
+    <div data-cy="transaction-list">
       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>
         Last 3 months transactions
       </div>
-      {filteredTransactions.map((transaction) => {
-        if (transaction.direction === 'received') {
-          return IncomeComponent(
-            transaction.userName,
-            transaction.amount,
-            transaction.timestamp,
-          );
-        } else if (transaction.direction === 'sent') {
-          return ExpenseComponent(
-            transaction.userName,
-            transaction.amount,
-            transaction.timestamp,
-          );
-        }
-        return null;
-      })}
+      {filteredTransactions.length === 0 ? (
+        <div data-cy="no-transactions-message">No transactions found</div>
+      ) : (
+        filteredTransactions.map((transaction) => {
+          if (transaction.direction === 'received') {
+            return IncomeComponent(
+              transaction.userName,
+              transaction.amount,
+              transaction.timestamp,
+            );
+          } else if (transaction.direction === 'sent') {
+            return ExpenseComponent(
+              transaction.userName,
+              transaction.amount,
+              transaction.timestamp,
+            );
+          }
+          return null;
+        })
+      )}
     </div>
   );
 }
@@ -83,6 +87,7 @@ function IncomeComponent(from: string, amount: number, timestamp: number) {
   const fromText = `From ${from}`;
   return (
     <div
+      data-cy="transaction-item"
       style={{
         background: '#f6f6f6',
         padding: 12,
@@ -104,6 +109,7 @@ function IncomeComponent(from: string, amount: number, timestamp: number) {
 function ExpenseComponent(to: String, amount: number, timestamp: number) {
   return (
     <div
+      data-cy="transaction-item"
       style={{
         background: '#f6f6f6',
         padding: 12,
