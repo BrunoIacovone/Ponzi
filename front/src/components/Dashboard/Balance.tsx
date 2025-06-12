@@ -20,7 +20,10 @@ export default function Balance() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div style={{ fontSize: 32, fontWeight: 700, marginBottom: 16 }}>
+    <div
+      data-cy="balance-display"
+      style={{ fontSize: 32, fontWeight: 700, marginBottom: 16 }}
+    >
       ${balance?.balance?.toFixed(2) || '0.00'}
       <div style={{ fontSize: 16, fontWeight: 400, color: '#888' }}>
         Current Balance
