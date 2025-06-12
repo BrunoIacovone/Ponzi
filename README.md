@@ -23,6 +23,7 @@ pero es mejor el open
 para correrlo en mobile tirate un
 ```bash
 npm run build
+npx cap sync
 npx cap open android
 ```
 
@@ -32,6 +33,7 @@ para corre appium tira:
 
 ```bash
 npm run build 
+npx cap sync
 npm run android
 appium
 npx wdio run .\wdio.conf.ts

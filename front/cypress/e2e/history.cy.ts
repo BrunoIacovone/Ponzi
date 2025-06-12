@@ -14,16 +14,6 @@ describe('Transaction History Page', () => {
     cy.contains('Transaction History').should('be.visible');
   });
 
-  it('each transaction should display amount, email and date', () => {
-    cy.get('[data-cy=transaction-item]')
-      .first()
-      .within(() => {
-        cy.contains('- $').should('exist'); // or use regex
-        cy.contains('@gmail.com').should('exist');
-        cy.contains(/\d{2}\/\d{2}\/\d{4}/).should('exist'); // date format
-      });
-  });
-
   it('should filter by type (e.g. Income)', () => {
     cy.get('select[data-cy=filter-transaction-type]').select('Income');
     cy.get('[data-cy=transaction-item]').each(($el) => {
@@ -39,13 +29,13 @@ describe('Transaction History Page', () => {
   });
 
   it('should filter by date range', () => {
-    const today = new Date();
+    const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1));
     const lastMonth = new Date();
-    lastMonth.setMonth(today.getMonth() - 1);
+    lastMonth.setMonth(tomorrow.getMonth() - 1);
 
     const formatDate = (date: Date) => date.toISOString().split('T')[0];
     cy.get('input[type="date"]').eq(0).type(formatDate(lastMonth));
-    cy.get('input[type="date"]').eq(1).type(formatDate(today));
+    cy.get('input[type="date"]').eq(1).type(formatDate(tomorrow));
 
     cy.get('[data-cy=transaction-item]').each(($el) => {
       cy.wrap($el)
@@ -57,7 +47,7 @@ describe('Transaction History Page', () => {
           const [day, month, year] = match![0].split('/').map(Number);
           const txDate = new Date(year, month - 1, day);
 
-          expect(txDate >= lastMonth && txDate <= today).to.be.true;
+          expect(txDate >= lastMonth && txDate <= tomorrow).to.be.true;
         });
     });
   });

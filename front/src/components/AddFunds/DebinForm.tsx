@@ -38,7 +38,7 @@ export default function DebinForm() {
           name="amount"
         />
       </div>
-      {error && <div style={{ color: 'red', marginTop: 8 }}>{error}</div>}
+      {error && <div className="error" style={{ color: 'red', marginTop: 8 }}>{error}</div>}
       <button
         type="submit"
         style={{ marginTop: 16, width: '100%' }}
