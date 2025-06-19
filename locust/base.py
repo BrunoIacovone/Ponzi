@@ -35,7 +35,7 @@ TOKENS = []
 
 def preload_tokens():
     global TOKENS
-    print("⏳ Preloading tokens...")
+    print("Preloading tokens...")
     for creds in SENDER_USERS:
         url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={API_KEY}"
         payload = {
@@ -48,7 +48,7 @@ def preload_tokens():
             if res.status_code == 200:
                 TOKENS.append(res.json()["idToken"])
             else:
-                print(f" Failed to get token for {creds['email']}, {creds['password']}: {res.status_code} {res.text}")
+                print(f"Failed to get token for {creds['email']}, {creds['password']}: {res.status_code} {res.text}")
         except Exception as e:
             print(f"Exception logging in {creds['email']}: {e}")
     print(f"Loaded {len(TOKENS)} tokens.")
