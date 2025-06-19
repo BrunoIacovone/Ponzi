@@ -3,10 +3,10 @@
 describe('Register Page', () => {
   beforeEach(() => {
     cy.visit('/signup');
-  })
+  });
 
-  it ('Should tell the user to fill the email field', () => {
-    cy.get("button[type=submit]").click();
+  it('Should tell the user to fill the email field', () => {
+    cy.get('button[type=submit]').click();
 
     cy.wait(2000);
     cy.url().should('include', '/signup');
@@ -14,7 +14,7 @@ describe('Register Page', () => {
 
     cy.get('input[type=email]').clear();
     cy.get('input[type=password]').clear();
-  })
+  });
 
   it('No debe crear la cuenta si el email es inválido', () => {
     cy.get('input[type=email]').type('a');
@@ -46,7 +46,9 @@ describe('Register Page', () => {
     cy.get('input[type=password]').type('12345678');
     cy.get('button[type=submit]').click();
 
-    cy.contains('Firebase: Error (auth/email-already-in-use).').should('be.visible');
+    cy.contains('Firebase: Error (auth/email-already-in-use).').should(
+      'be.visible',
+    );
 
     cy.get('input[type=email]').clear();
     cy.get('input[type=password]').clear();
@@ -58,8 +60,7 @@ describe('Register Page', () => {
     cy.get('input[type=password]').type('12345678');
     cy.get('button[type=submit]').click();
 
-    cy.wait(2000);    
+    cy.wait(2000);
     cy.logout();
   });
-
 });
