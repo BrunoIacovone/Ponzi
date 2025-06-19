@@ -8,6 +8,7 @@ import {
   deleteApp as deleteAdminApp,
   getApps as getAdminApps,
 } from 'firebase-admin/app';
+import { HttpService } from '@nestjs/axios';
 
 export class TestUtils {
   static app: INestApplication;
@@ -16,6 +17,7 @@ export class TestUtils {
 
   static async initializeApp(
     moduleBuilder?: (builder: TestingModuleBuilder) => TestingModuleBuilder,
+    customHttpService?: any,
   ) {
     let builder = Test.createTestingModule({
       imports: [AppModule],
@@ -23,6 +25,12 @@ export class TestUtils {
 
     if (moduleBuilder) {
       builder = moduleBuilder(builder);
+    }
+
+    if (customHttpService) {
+      builder = builder
+        .overrideProvider(HttpService)
+        .useValue(customHttpService);
     }
 
     const moduleFixture: TestingModule = await builder.compile();

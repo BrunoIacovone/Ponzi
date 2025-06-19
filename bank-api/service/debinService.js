@@ -11,6 +11,10 @@ export function transfer(email, amount) {
     return { success: false, message: 'Insufficient funds' };
   }
 
+  if (amount <= 0) {
+    return { success: false, message: 'Invalid amount' };
+  }
+
   accounts.set(email, current - amount);
   return { success: true, transferred: amount, remaining: accounts.get(email) };
 }

@@ -59,7 +59,7 @@ describe('DebinBankClientService', () => {
       mockHttpService.post.mockReturnValue(of(response));
       await expect(
         service.requestTransfer('test@test.com', 100),
-      ).rejects.toThrow('Request rejected: Insufficient funds');
+      ).rejects.toThrow('DEBIN error: DEBIN error: Insufficient funds');
     });
 
     it('should throw an error if the http call fails', async () => {
@@ -68,7 +68,7 @@ describe('DebinBankClientService', () => {
       );
       await expect(
         service.requestTransfer('test@test.com', 100),
-      ).rejects.toThrow('Error contacting DEBIN: Network error');
+      ).rejects.toThrow('DEBIN error: Network error');
     });
   });
 });

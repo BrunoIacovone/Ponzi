@@ -1,13 +1,28 @@
 import request from 'supertest';
 import { TestUtils } from '../test-utils';
+import { of } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { INestApplication } from '@nestjs/common';
+import { AxiosResponse } from 'axios';
 
 describe('Home Banking flow (e2e)', () => {
   let user: { uid: string; token: string; email: string };
-  const bankApi = request('http://localhost:3005');
+  let app: INestApplication<any>;
 
   beforeAll(async () => {
-    await TestUtils.initializeApp();
-    await TestUtils.app.listen(3000);
+    const mockHttpService = {
+      post: jest.fn().mockReturnValue(
+        of({
+          data: { success: true },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: {} as any,
+        } as AxiosResponse),
+      ),
+    };
+    await TestUtils.initializeApp(undefined, mockHttpService);
+    app = TestUtils.app;
     user = await TestUtils.createTestUser();
   });
 
@@ -24,10 +39,10 @@ describe('Home Banking flow (e2e)', () => {
     expect(initialBalance).toBe(0);
     const payload = { emailWallet: user.email, amount: 250 };
 
-    await bankApi
-      .post('/homeBanking/transfer')
-      .send(payload)
-      .expect(200)
+    await request(app.getHttpServer())
+      .post('/api/bank')
+      .send({ bankEmail: user.email, amount: 250 })
+      .expect(201)
       .expect((res) => {
         expect(res.body.success).toBe(true);
       });
@@ -46,16 +61,15 @@ describe('Home Banking flow (e2e)', () => {
 
   it('should return an error for a non-existent user email', async () => {
     const payload = {
-      emailWallet: 'non-existent-user@test.com',
+      bankEmail: 'non-existent-user@test.com',
       amount: 100,
     };
 
-    return bankApi
-      .post('/homeBanking/transfer')
+    await request(app.getHttpServer())
+      .post('/api/bank')
       .send(payload)
-      .expect(500)
+      .expect(404)
       .expect((res) => {
-        expect(res.body.success).toBe(false);
         expect(res.body.message).toContain(
           'User with email non-existent-user@test.com not found',
         );

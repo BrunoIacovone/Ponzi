@@ -38,6 +38,18 @@ export class FirebaseExceptionFilter implements ExceptionFilter {
       return;
     }
 
+    if (exception instanceof Error) {
+      const status = 500;
+      const message = exception.message || 'Unexpected error';
+      this.log(request, status, message, 'ERROR');
+      response.status(status).json({
+        statusCode: status,
+        message,
+        error: 'Internal Server Error',
+      });
+      return;
+    }
+
     const httpError = new InternalServerErrorException(
       exception?.message || 'Unexpected error',
     );

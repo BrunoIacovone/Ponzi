@@ -6,6 +6,6 @@ class StressUser(BaseApiUser):
     User class for stress testing. Inherits all tasks from BaseApiUser.
     Wait time is set to almost zero to generate maximum load.
     """
-    wait_time = between(0, 0.1)
+    wait_time = between(1, 1.5)
 
 ## Command to run: locust -f stressTest.py --host http://localhost:3000

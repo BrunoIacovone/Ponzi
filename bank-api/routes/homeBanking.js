@@ -10,6 +10,10 @@ router.post('/transfer', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Parámetros inválidos' });
   }
 
+  if (amount <= 0) {
+    return res.status(400).json({ success: false, message: 'Invalid amount' });
+  }
+
   try {
     const response = await axios.post('http://localhost:3000/api/bank', {
       bankEmail: emailWallet,
