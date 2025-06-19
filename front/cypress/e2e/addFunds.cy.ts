@@ -43,5 +43,9 @@ describe('Add Funds Page', () => {
     cy.get('input[placeholder="Bank Email"]').type('mark@mail.com');
     cy.get('button[type=submit]').click();
     cy.contains('+ $100').should('be.visible');
+    cy.get('button[name=send-money]').click();
+    cy.get('input[type=number]').type('100');
+    cy.get('input[type=email]').type('maxsasysallemi@gmail.com');
+    cy.get('button[type=submit]').click();
   });
 });
