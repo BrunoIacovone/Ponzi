@@ -93,5 +93,10 @@ describe('Send Money Page', () => {
     const confirmation = await $('//*[contains(normalize-space(.), "- $10")]');
     await confirmation.waitForDisplayed({ timeout: 5000 });
     expect(confirmation).toBeDisplayed();
+
+    await $('button[name="add-founds"]').click();
+    await $('input[type="number"]').setValue('10');
+    await $('input[placeholder="Bank Email"]').setValue('mark@mail.com');
+    await $('button[type="submit"]').click();
   });
 });

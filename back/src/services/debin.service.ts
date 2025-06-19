@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import admin from '../firebase';
 import { WalletRepository } from '../repositories/wallet.repository';
 import { DebinBankClientService } from './debin-bank-client.service';
@@ -36,7 +36,7 @@ export class DebinService {
         transaction: { txId, amount, timestamp: now },
       };
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new Error(error.message);
     }
   }
 }

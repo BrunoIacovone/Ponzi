@@ -64,7 +64,8 @@ describe('Add Funds Page', () => {
     await $('//button[contains(text(), "Go back to Dashboard")]').click();
   });
 
-  it('should add funds to the account', async () => {
+  it('should add funds to the account and send money', async () => {
+    // Paso 1: Agregar fondos
     await $('input[type="number"]').setValue('100');
     await $('input[placeholder="Bank Email"]').setValue('mark@mail.com');
     await $('button[type="submit"]').click();
@@ -72,5 +73,11 @@ describe('Add Funds Page', () => {
     const confirmation = await $('//*[contains(normalize-space(.), "+ $100")]');
     await confirmation.waitForDisplayed({ timeout: 5000 });
     expect(confirmation).toBeDisplayed();
+
+    // Paso 2: Enviar dinero
+    await $('button[name="send-money"]').click();
+    await $('input[type="number"]').setValue('100');
+    await $('input[type="email"]').setValue('maxsasysallemi@gmail.com');
+    await $('button[type="submit"]').click();
   });
 });

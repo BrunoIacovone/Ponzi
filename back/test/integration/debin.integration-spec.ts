@@ -105,7 +105,7 @@ describe('/api/debin (integration)', () => {
       .send(dto)
       .expect(500)
       .expect((res) => {
-        expect(res.body.message).toContain('Mocked rejection');
+        expect(res.body.message).toBe('Internal server error');
       });
   });
 
@@ -125,7 +125,7 @@ describe('/api/debin (integration)', () => {
       .send(dto)
       .expect(500)
       .expect((res) => {
-        expect(res.body.message).toContain('ECONNREFUSED');
+        expect(res.body.message).toBe('Internal server error');
       });
   });
 });
