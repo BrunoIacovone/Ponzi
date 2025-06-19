@@ -59,5 +59,9 @@ describe('Send Money Page', () => {
     cy.get('input[type=email]').type('maxsasysallemi@gmail.com');
     cy.get('button[type=submit]').click();
     cy.contains('- $10').should('be.visible');
+    cy.get('button[name=add-founds]').click();
+    cy.get('input[type="number"]').type('10');
+    cy.get('input[placeholder="Bank Email"]').type('mark@mail.com');
+    cy.get('button[type=submit]').click();
   });
 });
